@@ -3,6 +3,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server';
 import type { Client, ClientFilterInput, ClientHierarchyNode, ClientWithRelations } from '@/types/client';
 import type { Contact } from '@/types/contact';
 import { buildClientHierarchy, filterClients } from '@/features/clients/helpers';
+import { getClientIdsMatchingMachineFilters } from '@/features/machines/queries';
 
 const mockClients: Client[] = [
   {
@@ -95,11 +96,15 @@ export const getClients = cache(async (filters: ClientFilterInput = {}): Promise
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.from('clients').select('*').order('name', { ascending: true });
 
-  if (error || !data) {
-    return filterClients(mockClients, filters);
+  const baseClients = error || !data ? mockClients : (data as Client[]);
+  const basicFilteredClients = filterClients(baseClients, filters);
+
+  const matchingMachineClientIds = await getClientIdsMatchingMachineFilters(filters.machineFilters ?? {});
+  if (!matchingMachineClientIds) {
+    return basicFilteredClients;
   }
 
-  return filterClients(data as Client[], filters);
+  return basicFilteredClients.filter((client) => matchingMachineClientIds.has(client.id));
 });
 
 export const getClientHierarchy = cache(async (filters: ClientFilterInput = {}): Promise<ClientHierarchyNode[]> => {

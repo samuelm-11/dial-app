@@ -4,6 +4,7 @@ import { ClientFilters, getFiltersFromSearchParams } from '@/features/clients/co
 import { ClientTable } from '@/features/clients/components/client-table';
 import { ClientTreeView } from '@/features/clients/components/client-tree-view';
 import { getClientHierarchy, getClients } from '@/features/clients/queries';
+import { getMachineCategories, getMachineTypes } from '@/features/machines/queries';
 
 export default async function ClientsPage({
   searchParams
@@ -14,8 +15,12 @@ export default async function ClientsPage({
   const filters = getFiltersFromSearchParams(resolvedSearchParams);
   const view = Array.isArray(resolvedSearchParams.view) ? resolvedSearchParams.view[0] : resolvedSearchParams.view;
 
-  const clients = await getClients(filters);
-  const hierarchy = await getClientHierarchy(filters);
+  const [clients, hierarchy, machineCategories, machineTypes] = await Promise.all([
+    getClients(filters),
+    getClientHierarchy(filters),
+    getMachineCategories(),
+    getMachineTypes()
+  ]);
 
   return (
     <PageContainer title="Clients">
@@ -37,7 +42,7 @@ export default async function ClientsPage({
           </div>
         </div>
 
-        <ClientFilters />
+        <ClientFilters machineCategories={machineCategories} machineTypes={machineTypes} />
         {view === 'tree' ? <ClientTreeView nodes={hierarchy} /> : <ClientTable clients={clients} />}
       </div>
     </PageContainer>

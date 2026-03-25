@@ -2,9 +2,17 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { clientCategoryLabels, clientFlagLabels } from '@/features/clients/helpers';
+import { MachineFiltersPanel } from '@/features/machines/components/machine-filters-panel';
+import type { MachineCategory, MachineType } from '@/types/machine';
 import type { ClientCategoryCode, ClientFlagCode } from '@/types/client';
 
-export function ClientFilters() {
+export function ClientFilters({
+  machineCategories,
+  machineTypes
+}: {
+  machineCategories: MachineCategory[];
+  machineTypes: MachineType[];
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -128,6 +136,8 @@ export function ClientFilters() {
         </label>
       </div>
 
+      <MachineFiltersPanel categories={machineCategories} types={machineTypes} />
+
       <div className="flex justify-end">
         <button className="rounded border border-slate-300 px-3 py-2 text-sm" onClick={resetFilters}>
           Réinitialiser les filtres
@@ -151,6 +161,14 @@ export function getFiltersFromSearchParams(
   hasContract?: boolean;
   hasOpenOpportunities?: boolean;
   hasOpenAlerts?: boolean;
+  machineFilters?: {
+    machineCategoryIds?: string[];
+    machineTypeIds?: string[];
+    hasHotDrinks?: boolean;
+    hasCandy?: boolean;
+    withoutWaterFountain?: boolean;
+    withFiltersDueSoon?: boolean;
+  };
 } {
   const asString = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value);
 
@@ -158,6 +176,9 @@ export function getFiltersFromSearchParams(
   const flag = asString(searchParams.flag);
 
   const toBoolean = (value: string | undefined) => (value === undefined ? undefined : value === '1');
+
+  const machineCategoryId = asString(searchParams.machineCategoryId);
+  const machineTypeId = asString(searchParams.machineTypeId);
 
   return {
     name: asString(searchParams.name),
@@ -170,6 +191,14 @@ export function getFiltersFromSearchParams(
     hasParent: toBoolean(asString(searchParams.hasParent)),
     hasContract: toBoolean(asString(searchParams.hasContract)),
     hasOpenOpportunities: toBoolean(asString(searchParams.hasOpenOpportunities)),
-    hasOpenAlerts: toBoolean(asString(searchParams.hasOpenAlerts))
+    hasOpenAlerts: toBoolean(asString(searchParams.hasOpenAlerts)),
+    machineFilters: {
+      machineCategoryIds: machineCategoryId ? [machineCategoryId] : undefined,
+      machineTypeIds: machineTypeId ? [machineTypeId] : undefined,
+      hasHotDrinks: toBoolean(asString(searchParams.hasHotDrinks)),
+      hasCandy: toBoolean(asString(searchParams.hasCandy)),
+      withoutWaterFountain: toBoolean(asString(searchParams.withoutWaterFountain)),
+      withFiltersDueSoon: toBoolean(asString(searchParams.withFiltersDueSoon))
+    }
   };
 }
