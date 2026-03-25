@@ -20,9 +20,9 @@ const protectedPaths = [
   '/account',
 ];
 
-export async function middleware(req: NextRequest) {
+export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
-    request: req,
+    request,
   });
 
   const supabase = createServerClient(
@@ -31,9 +31,17 @@ export async function middleware(req: NextRequest) {
     {
       cookies: {
         getAll() {
-          return req.cookies.getAll();
+          return request.cookies.getAll();
         },
         setAll(cookiesToSet: CookieToSet[]) {
+          cookiesToSet.forEach(({ name, value }) => {
+            request.cookies.set(name, value);
+          });
+
+          response = NextResponse.next({
+            request,
+          });
+
           cookiesToSet.forEach(({ name, value, options }) => {
             response.cookies.set(name, value, options);
           });
@@ -42,17 +50,19 @@ export async function middleware(req: NextRequest) {
     }
   );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  await supabase.auth.getUser();
 
-  const pathname = req.nextUrl.pathname;
+  const pathname = request.nextUrl.pathname;
   const isProtected = protectedPaths.some((path) =>
     path === '/' ? pathname === '/' : pathname.startsWith(path)
   );
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   if (isProtected && !user) {
-    const url = req.nextUrl.clone();
+    const url = request.nextUrl.clone();
     url.pathname = '/login';
     return NextResponse.redirect(url);
   }
