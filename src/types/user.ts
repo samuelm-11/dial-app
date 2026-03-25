@@ -19,3 +19,8 @@ export type UserAccountSummary = {
   role: UserRole;
   status: UserStatus;
 };
+
+export type UserInvitationPlaceholder = {
+  status: 'pending_integration';
+  email: string;
+};

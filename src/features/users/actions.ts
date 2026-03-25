@@ -1,17 +1,25 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { requireRole } from '@/lib/auth/guards';
+import { requireAuth, requireRole } from '@/lib/auth/guards';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { inviteUserSchema, userUpdateSchema, type InviteUserValues, type UserUpdateValues } from '@/features/users/schemas';
+import type { UserInvitationPlaceholder } from '@/types/user';
 
 async function assertAdminAccess() {
   await requireRole('admin');
 }
 
 export async function updateUser(userId: string, input: UserUpdateValues) {
+  const currentProfile = await requireAuth();
   await assertAdminAccess();
+
   const payload = userUpdateSchema.parse(input);
+
+  if (currentProfile.id === userId && !payload.isActive) {
+    throw new Error('Vous ne pouvez pas désactiver votre propre compte.');
+  }
+
   const supabase = await createSupabaseServerClient();
 
   const { error } = await supabase.from('profiles').update({ role: payload.role, is_active: payload.isActive }).eq('id', userId);
@@ -23,10 +31,12 @@ export async function updateUser(userId: string, input: UserUpdateValues) {
   revalidatePath('/users');
 }
 
-export async function inviteUserPlaceholder(input: InviteUserValues) {
+export async function inviteUserPlaceholder(input: InviteUserValues): Promise<UserInvitationPlaceholder> {
   await assertAdminAccess();
-  inviteUserSchema.parse(input);
+  const payload = inviteUserSchema.parse(input);
 
-  // Placeholder propre: l'invitation réelle sera branchée quand le flux email sera validé.
-  return { status: 'pending_integration' as const };
+  return {
+    status: 'pending_integration' as const,
+    email: payload.email
+  };
 }
