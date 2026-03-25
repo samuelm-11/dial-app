@@ -7,7 +7,12 @@ import { updateUser } from '@/features/users/actions';
 import { userUpdateSchema, type UserUpdateValues } from '@/features/users/schemas';
 import type { UserListItem } from '@/types/user';
 
-export function UserForm({ user }: { user: UserListItem }) {
+type UserFormProps = {
+  user: UserListItem;
+  isCurrentUser: boolean;
+};
+
+export function UserForm({ user, isCurrentUser }: UserFormProps) {
   const [isPending, startTransition] = useTransition();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { register, handleSubmit } = useForm<UserUpdateValues>({
@@ -38,7 +43,7 @@ export function UserForm({ user }: { user: UserListItem }) {
           <option value="viewer">Lecture</option>
         </select>
         <label className="text-xs text-slate-700">
-          <input type="checkbox" className="mr-1" {...register('isActive')} disabled={isPending} />
+          <input type="checkbox" className="mr-1" {...register('isActive')} disabled={isPending || isCurrentUser} />
           Actif
         </label>
         <button type="submit" className="rounded border border-slate-300 px-2 py-1 text-xs hover:bg-slate-100 disabled:opacity-60" disabled={isPending}>

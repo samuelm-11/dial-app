@@ -8,7 +8,13 @@ const dateFormatter = new Intl.DateTimeFormat('fr-FR', {
   year: 'numeric'
 });
 
-export function UserTable({ users, canManage }: { users: UserListItem[]; canManage: boolean }) {
+type UserTableProps = {
+  users: UserListItem[];
+  canManage: boolean;
+  currentUserId: string;
+};
+
+export function UserTable({ users, canManage, currentUserId }: UserTableProps) {
   if (users.length === 0) {
     return <p className="rounded border border-dashed p-6 text-sm text-slate-500">Aucun utilisateur trouvé.</p>;
   }
@@ -27,29 +33,29 @@ export function UserTable({ users, canManage }: { users: UserListItem[]; canMana
           </tr>
         </thead>
         <tbody>
-          {users.map((user) => (
-            <tr key={user.id} className="border-b border-slate-100 align-top">
-              <td className="px-3 py-2 font-medium text-slate-900">{user.fullName ?? '—'}</td>
-              <td className="px-3 py-2 text-slate-700">{user.email}</td>
-              <td className="px-3 py-2">
-                <UserRoleBadge role={user.role} />
-              </td>
-              <td className="px-3 py-2">
-                <span className={`rounded px-2 py-1 text-xs ${user.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-700'}`}>
-                  {user.isActive ? 'Actif' : 'Inactif'}
-                </span>
-              </td>
-              <td className="px-3 py-2 text-slate-700">{dateFormatter.format(new Date(user.createdAt))}</td>
-              <td className="space-y-2 px-3 py-2">
-                {canManage ? <UserForm user={user} /> : <p className="text-xs text-slate-500">Lecture seule</p>}
-                {canManage ? (
-                  <button type="button" disabled className="rounded border border-dashed border-slate-300 px-2 py-1 text-xs text-slate-500">
-                    Invitation (bientôt)
-                  </button>
-                ) : null}
-              </td>
-            </tr>
-          ))}
+          {users.map((user) => {
+            const isCurrentUser = user.id === currentUserId;
+
+            return (
+              <tr key={user.id} className="border-b border-slate-100 align-top">
+                <td className="px-3 py-2 font-medium text-slate-900">{user.fullName ?? '—'}</td>
+                <td className="px-3 py-2 text-slate-700">{user.email}</td>
+                <td className="px-3 py-2">
+                  <UserRoleBadge role={user.role} />
+                </td>
+                <td className="px-3 py-2">
+                  <span className={`rounded px-2 py-1 text-xs ${user.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-700'}`}>
+                    {user.isActive ? 'Actif' : 'Inactif'}
+                  </span>
+                </td>
+                <td className="px-3 py-2 text-slate-700">{dateFormatter.format(new Date(user.createdAt))}</td>
+                <td className="space-y-2 px-3 py-2">
+                  {canManage ? <UserForm user={user} isCurrentUser={isCurrentUser} /> : <p className="text-xs text-slate-500">Lecture seule</p>}
+                  {isCurrentUser ? <p className="text-xs text-slate-500">Votre compte ne peut pas être désactivé.</p> : null}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
