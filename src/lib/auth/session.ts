@@ -12,17 +12,19 @@ export const getSessionUser = cache(async (): Promise<User | null> => {
 
 export const getCurrentUserProfile = cache(async (): Promise<UserProfile | null> => {
   const supabase = await createSupabaseServerClient();
-  const { data } = await supabase.auth.getUser();
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
 
-  if (!data.user) {
+  if (!user) {
     return null;
   }
 
   const { data: profile, error } = await supabase
     .from('profiles')
     .select('id, full_name, role, is_active, created_at, updated_at')
-    .eq('id', data.user.id)
-    .single();
+    .eq('id', user.id)
+    .maybeSingle();
 
   if (error) {
     console.error('Error fetching profile:', error);
@@ -30,12 +32,45 @@ export const getCurrentUserProfile = cache(async (): Promise<UserProfile | null>
   }
 
   if (!profile) {
-    return null;
+    const { error: upsertError } = await supabase.from('profiles').upsert(
+      {
+        id: user.id,
+        email: user.email ?? '',
+        full_name: (user.user_metadata?.full_name as string | undefined) ?? null
+      },
+      { onConflict: 'id' }
+    );
+
+    if (upsertError) {
+      console.error('Error creating missing profile:', upsertError);
+      return null;
+    }
+
+    const { data: createdProfile, error: createdProfileError } = await supabase
+      .from('profiles')
+      .select('id, full_name, role, is_active, created_at, updated_at')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (createdProfileError || !createdProfile) {
+      console.error('Error fetching created profile:', createdProfileError);
+      return null;
+    }
+
+    return {
+      id: createdProfile.id,
+      email: user.email ?? '',
+      fullName: createdProfile.full_name,
+      role: createdProfile.role,
+      isActive: createdProfile.is_active,
+      createdAt: createdProfile.created_at,
+      updatedAt: createdProfile.updated_at
+    };
   }
 
   return {
     id: profile.id,
-    email: data.user.email ?? '',
+    email: user.email ?? '',
     fullName: profile.full_name,
     role: profile.role,
     isActive: profile.is_active,
