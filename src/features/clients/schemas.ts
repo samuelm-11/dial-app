@@ -44,7 +44,11 @@ export const clientFilterSchema = z.object({
   machineFilters: z
     .object({
       machineCategoryIds: z.array(z.string()).optional(),
-      machineTypeIds: z.array(z.string()).optional()
+      machineTypeIds: z.array(z.string()).optional(),
+      hasHotDrinks: z.boolean().optional(),
+      hasCandy: z.boolean().optional(),
+      withoutWaterFountain: z.boolean().optional(),
+      withFiltersDueSoon: z.boolean().optional()
     })
     .optional()
 });

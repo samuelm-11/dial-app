@@ -52,6 +52,10 @@ export type ClientFilterInput = {
   machineFilters?: {
     machineCategoryIds?: string[];
     machineTypeIds?: string[];
+    hasHotDrinks?: boolean;
+    hasCandy?: boolean;
+    withoutWaterFountain?: boolean;
+    withFiltersDueSoon?: boolean;
   };
 };
 
