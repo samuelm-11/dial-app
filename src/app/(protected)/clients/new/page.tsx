@@ -1,10 +1,13 @@
 import { PageContainer } from '@/components/layout/page-container';
-import { PlaceholderState } from '@/components/ui/placeholder-state';
+import { ClientForm } from '@/features/clients/components/client-form';
+import { getClientParentOptions } from '@/features/clients/queries';
 
-export default function NewClientPage() {
+export default async function NewClientPage() {
+  const parentOptions = await getClientParentOptions();
+
   return (
     <PageContainer title="Nouveau client">
-      <PlaceholderState message="Formulaire de création client à implémenter prochainement." />
+      <ClientForm mode="create" parentOptions={parentOptions} />
     </PageContainer>
   );
 }
