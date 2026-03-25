@@ -1,10 +1,43 @@
 import { PageContainer } from '@/components/layout/page-container';
-import { PlaceholderState } from '@/components/ui/placeholder-state';
+import { AlertFilters, getAlertFiltersFromSearchParams } from '@/features/alerts/components/alert-filters';
+import { AlertTable } from '@/features/alerts/components/alert-table';
+import { getAlerts } from '@/features/alerts/queries';
+import { getClientParentOptions } from '@/features/clients/queries';
 
-export default function AlertsPage() {
+export default async function AlertsPage({
+  searchParams
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const resolvedSearchParams = await searchParams;
+  const filters = getAlertFiltersFromSearchParams(resolvedSearchParams);
+
+  const [alerts, clients] = await Promise.all([getAlerts(filters), getClientParentOptions()]);
+
+  const urgentAlerts = alerts.filter((alert) => alert.status === 'open' && alert.dueBucket === 'urgent');
+  const upcomingAlerts = alerts.filter((alert) => alert.status === 'open' && alert.dueBucket === 'upcoming');
+  const doneAlerts = alerts.filter((alert) => alert.status !== 'open');
+
   return (
     <PageContainer title="Alertes">
-      <PlaceholderState message="Centre d'alertes (contrats et filtres machines) à implémenter." />
+      <div className="space-y-4">
+        <AlertFilters clients={clients} />
+
+        <section className="space-y-2">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-700">Alertes urgentes</h2>
+          <AlertTable alerts={urgentAlerts} />
+        </section>
+
+        <section className="space-y-2">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-700">Alertes à venir</h2>
+          <AlertTable alerts={upcomingAlerts} />
+        </section>
+
+        <section className="space-y-2">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-700">Alertes traitées</h2>
+          <AlertTable alerts={doneAlerts} />
+        </section>
+      </div>
     </PageContainer>
   );
 }

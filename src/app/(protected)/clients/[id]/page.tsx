@@ -6,16 +6,18 @@ import { getClientById } from '@/features/clients/queries';
 import { getClientContracts } from '@/features/contracts/queries';
 import { getClientMachines, getMachineCategories, getMachineTypes } from '@/features/machines/queries';
 import { getClientOpportunities } from '@/features/opportunities/queries';
+import { getClientAlerts } from '@/features/alerts/queries';
 
 export default async function ClientDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [client, clientMachines, machineTypes, contracts, opportunities, machineCategories] = await Promise.all([
+  const [client, clientMachines, machineTypes, contracts, opportunities, machineCategories, alerts] = await Promise.all([
     getClientById(id),
     getClientMachines(id),
     getMachineTypes(),
     getClientContracts(id),
     getClientOpportunities(id),
-    getMachineCategories()
+    getMachineCategories(),
+    getClientAlerts(id)
   ]);
 
   if (!client) {
@@ -33,6 +35,7 @@ export default async function ClientDetailsPage({ params }: { params: Promise<{ 
           contracts={contracts}
           opportunities={opportunities}
           machineCategoryOptions={machineCategories.map((category) => ({ id: category.id, label: category.label }))}
+          alerts={alerts}
         />
       </div>
     </PageContainer>
