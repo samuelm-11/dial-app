@@ -18,11 +18,16 @@ export const getCurrentUserProfile = cache(async (): Promise<UserProfile | null>
     return null;
   }
 
-  const { data: profile } = await supabase
+  const { data: profile, error } = await supabase
     .from('profiles')
-    .select('id, email, full_name, role, is_active, created_at, updated_at')
+    .select('id, full_name, role, is_active, created_at, updated_at')
     .eq('id', data.user.id)
     .single();
+
+  if (error) {
+    console.error('Error fetching profile:', error);
+    return null;
+  }
 
   if (!profile) {
     return null;
@@ -30,7 +35,7 @@ export const getCurrentUserProfile = cache(async (): Promise<UserProfile | null>
 
   return {
     id: profile.id,
-    email: profile.email,
+    email: data.user.email ?? '',
     fullName: profile.full_name,
     role: profile.role,
     isActive: profile.is_active,
