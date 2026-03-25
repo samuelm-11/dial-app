@@ -1,4 +1,6 @@
-export type UserRole = 'admin' | 'manager' | 'viewer';
+export const userRoleValues = ['admin', 'manager', 'viewer'] as const;
+
+export type UserRole = (typeof userRoleValues)[number];
 
 export type UserProfile = {
   id: string;
