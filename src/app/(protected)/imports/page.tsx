@@ -1,10 +1,10 @@
 import { PageContainer } from '@/components/layout/page-container';
-import { PlaceholderState } from '@/components/ui/placeholder-state';
+import { ImportWorkflow } from '@/features/imports/components/import-workflow';
 
 export default function ImportsPage() {
   return (
     <PageContainer title="Imports">
-      <PlaceholderState message="Import Excel/CSV (clients, machines, contacts) à implémenter." />
+      <ImportWorkflow />
     </PageContainer>
   );
 }
