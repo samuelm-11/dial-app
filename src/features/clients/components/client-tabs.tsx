@@ -12,6 +12,7 @@ import { ClientAlertsTab } from '@/features/clients/components/client-alerts-tab
 import { ClientNotesTab } from '@/features/clients/components/client-notes-tab';
 import type { Contract } from '@/types/contract';
 import type { Opportunity } from '@/types/opportunity';
+import type { Alert } from '@/types/alert';
 
 const tabs = ['Vue d’ensemble', 'Contacts', 'Parc machines', 'Contrats', 'Opportunités', 'Alertes', 'Notes'] as const;
 type Tab = (typeof tabs)[number];
@@ -22,7 +23,8 @@ export function ClientTabs({
   machineTypes,
   contracts,
   opportunities,
-  machineCategoryOptions
+  machineCategoryOptions,
+  alerts
 }: {
   client: ClientWithRelations;
   clientMachines: ClientMachine[];
@@ -30,6 +32,7 @@ export function ClientTabs({
   contracts: Contract[];
   opportunities: Opportunity[];
   machineCategoryOptions: Array<{ id: string; label: string }>;
+  alerts: Alert[];
 }) {
   const [activeTab, setActiveTab] = useState<Tab>('Vue d’ensemble');
 
@@ -56,7 +59,7 @@ export function ClientTabs({
       {activeTab === 'Opportunités' ? (
         <ClientOpportunitiesTab clientId={client.id} opportunities={opportunities} machineCategoryOptions={machineCategoryOptions} />
       ) : null}
-      {activeTab === 'Alertes' ? <ClientAlertsTab /> : null}
+      {activeTab === 'Alertes' ? <ClientAlertsTab alerts={alerts} /> : null}
       {activeTab === 'Notes' ? <ClientNotesTab client={client} /> : null}
     </div>
   );

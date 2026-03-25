@@ -1,57 +1,60 @@
 import Link from 'next/link';
 import { PageContainer } from '@/components/layout/page-container';
-import { getClientsWithoutContractPdf, getContractsEndingSoon } from '@/features/contracts/queries';
-import { getOpportunities } from '@/features/opportunities/queries';
+import { getAlerts, getUrgentAlerts } from '@/features/alerts/queries';
+import { getClients } from '@/features/clients/queries';
+import { getContractsEndingSoon } from '@/features/contracts/queries';
 
 export default async function DashboardPage() {
-  const [endingSoonContracts, contractsWithoutPdf, openOpportunities, recentOpportunities] = await Promise.all([
+  const [allOpenAlerts, urgentAlerts, contractsEndingSoon, redFlagClients] = await Promise.all([
+    getAlerts({ status: ['open'] }),
+    getUrgentAlerts(),
     getContractsEndingSoon(90),
-    getClientsWithoutContractPdf(),
-    getOpportunities({ statuses: ['open', 'qualified', 'proposal'] }),
-    getOpportunities({})
+    getClients({ flags: ['risk'] })
   ]);
 
-  const potentialAmount = openOpportunities.reduce((sum, item) => sum + (item.estimatedValue ?? 0), 0);
+  const filterDueSoon = allOpenAlerts.filter((alert) => alert.type === 'filter_change' && (alert.dueBucket === 'urgent' || alert.dueBucket === 'upcoming'));
 
   return (
     <PageContainer title="Dashboard">
       <div className="space-y-4">
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
           <div className="rounded border border-slate-200 bg-slate-50 p-4">
-            <p className="text-xs uppercase text-slate-500">Contrats finissant bientôt</p>
-            <p className="text-2xl font-semibold text-slate-900">{endingSoonContracts.length}</p>
-            <p className="text-xs text-slate-600">Source privilégiée: vue v_contracts_ending_soon.</p>
+            <p className="text-xs uppercase text-slate-500">Filtres à changer bientôt</p>
+            <p className="text-2xl font-semibold text-slate-900">{filterDueSoon.length}</p>
+            <p className="text-xs text-slate-600">Alertes filtres urgentes et à venir.</p>
           </div>
 
           <div className="rounded border border-slate-200 bg-slate-50 p-4">
-            <p className="text-xs uppercase text-slate-500">Opportunités ouvertes</p>
-            <p className="text-2xl font-semibold text-slate-900">{openOpportunities.length}</p>
-            <p className="text-xs text-slate-600">Statuts open / qualified / proposal.</p>
+            <p className="text-xs uppercase text-slate-500">Alertes ouvertes</p>
+            <p className="text-2xl font-semibold text-slate-900">{allOpenAlerts.length}</p>
+            <p className="text-xs text-slate-600">Contrats + maintenance filtres.</p>
           </div>
+
           <div className="rounded border border-slate-200 bg-slate-50 p-4">
-            <p className="text-xs uppercase text-slate-500">Potentiel estimé</p>
-            <p className="text-2xl font-semibold text-slate-900">{Math.round(potentialAmount).toLocaleString('fr-FR')} €</p>
-            <p className="text-xs text-slate-600">Somme des opportunités ouvertes.</p>
+            <p className="text-xs uppercase text-slate-500">Clients flag rouge</p>
+            <p className="text-2xl font-semibold text-slate-900">{redFlagClients.length}</p>
+            <p className="text-xs text-slate-600">Clients avec niveau risque élevé.</p>
           </div>
+
           <div className="rounded border border-slate-200 bg-slate-50 p-4">
-            <p className="text-xs uppercase text-slate-500">Clients sans PDF contrat</p>
-            <p className="text-2xl font-semibold text-slate-900">{contractsWithoutPdf.length}</p>
-            <p className="text-xs text-slate-600">Bucket privé contracts requis pour conformité.</p>
+            <p className="text-xs uppercase text-slate-500">Contrats proches de fin</p>
+            <p className="text-2xl font-semibold text-slate-900">{contractsEndingSoon.length}</p>
+            <p className="text-xs text-slate-600">Échéance à 90 jours.</p>
           </div>
         </div>
 
         <div className="rounded border border-slate-200 p-4">
-          <h2 className="text-sm font-semibold text-slate-900">Échéances contrats (90 jours)</h2>
-          {endingSoonContracts.length === 0 ? (
-            <p className="mt-2 text-sm text-slate-500">Aucun contrat en fin proche.</p>
+          <h2 className="text-sm font-semibold text-slate-900">Alertes urgentes</h2>
+          {urgentAlerts.length === 0 ? (
+            <p className="mt-2 text-sm text-slate-500">Aucune alerte urgente.</p>
           ) : (
             <ul className="mt-2 space-y-1 text-sm text-slate-700">
-              {endingSoonContracts.slice(0, 8).map((contract) => (
-                <li key={contract.id}>
-                  <Link href={`/clients/${contract.clientId}`} className="hover:underline">
-                    {contract.clientName}
+              {urgentAlerts.slice(0, 8).map((alert) => (
+                <li key={alert.id}>
+                  <Link href={`/clients/${alert.clientId}`} className="hover:underline">
+                    {alert.clientName}
                   </Link>{' '}
-                  · {contract.title} · J-{contract.daysRemaining}
+                  · {alert.title} · J-{alert.daysRemaining}
                 </li>
               ))}
             </ul>
@@ -59,17 +62,17 @@ export default async function DashboardPage() {
         </div>
 
         <div className="rounded border border-slate-200 p-4">
-          <h2 className="text-sm font-semibold text-slate-900">Opportunités récentes</h2>
-          {recentOpportunities.length === 0 ? (
-            <p className="mt-2 text-sm text-slate-500">Aucune opportunité récente.</p>
+          <h2 className="text-sm font-semibold text-slate-900">Contrats proches de fin</h2>
+          {contractsEndingSoon.length === 0 ? (
+            <p className="mt-2 text-sm text-slate-500">Aucun contrat proche de fin.</p>
           ) : (
             <ul className="mt-2 space-y-1 text-sm text-slate-700">
-              {recentOpportunities.slice(0, 6).map((opportunity) => (
-                <li key={opportunity.id}>
-                  <Link href={`/clients/${opportunity.clientId}`} className="hover:underline">
-                    {opportunity.clientName}
+              {contractsEndingSoon.slice(0, 8).map((contract) => (
+                <li key={contract.id}>
+                  <Link href={`/clients/${contract.clientId}`} className="hover:underline">
+                    {contract.clientName}
                   </Link>{' '}
-                  · {opportunity.title} · {opportunity.status}
+                  · {contract.title} · J-{contract.daysRemaining}
                 </li>
               ))}
             </ul>
