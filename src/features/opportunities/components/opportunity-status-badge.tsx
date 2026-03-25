@@ -1,3 +1,4 @@
+import { Badge } from '@/components/ui/badge';
 import type { OpportunityStatus } from '@/types/opportunity';
 
 const statusLabelMap: Record<OpportunityStatus, string> = {
@@ -8,16 +9,16 @@ const statusLabelMap: Record<OpportunityStatus, string> = {
   lost: 'Perdue'
 };
 
-const statusClassMap: Record<OpportunityStatus, string> = {
-  open: 'bg-sky-100 text-sky-800',
-  qualified: 'bg-violet-100 text-violet-800',
-  proposal: 'bg-amber-100 text-amber-800',
-  won: 'bg-emerald-100 text-emerald-800',
-  lost: 'bg-slate-200 text-slate-700'
+const statusToneMap: Record<OpportunityStatus, 'info' | 'accent' | 'warning' | 'success' | 'neutral'> = {
+  open: 'info',
+  qualified: 'accent',
+  proposal: 'warning',
+  won: 'success',
+  lost: 'neutral'
 };
 
 export function OpportunityStatusBadge({ status }: { status: OpportunityStatus }) {
-  return <span className={`rounded-full px-2 py-1 text-xs font-medium ${statusClassMap[status]}`}>{statusLabelMap[status]}</span>;
+  return <Badge label={statusLabelMap[status]} tone={statusToneMap[status]} />;
 }
 
 export const opportunityStatusLabels = statusLabelMap;

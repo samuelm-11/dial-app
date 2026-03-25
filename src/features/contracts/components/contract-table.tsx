@@ -1,14 +1,16 @@
 import Link from 'next/link';
+import { StatePanel } from '@/components/ui/state-panel';
+import { TableShell } from '@/components/ui/table-shell';
 import { clientCategoryLabels, clientFlagLabels } from '@/features/clients/helpers';
 import type { Contract } from '@/types/contract';
 
 export function ContractTable({ contracts }: { contracts: Contract[] }) {
   if (contracts.length === 0) {
-    return <p className="rounded border border-dashed p-6 text-sm text-slate-500">Aucun contrat trouvé avec ces filtres.</p>;
+    return <StatePanel message="Aucun contrat trouvé avec ces filtres." variant="empty" />;
   }
 
   return (
-    <div className="overflow-x-auto">
+    <TableShell>
       <table className="min-w-full border-collapse text-sm">
         <thead>
           <tr className="border-b bg-slate-50 text-left text-slate-600">
@@ -43,6 +45,6 @@ export function ContractTable({ contracts }: { contracts: Contract[] }) {
           ))}
         </tbody>
       </table>
-    </div>
+    </TableShell>
   );
 }

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { PageContainer } from '@/components/layout/page-container';
+import { Button } from '@/components/ui/button';
 import { ClientFilters, getFiltersFromSearchParams } from '@/features/clients/components/client-filters';
 import { ClientTable } from '@/features/clients/components/client-table';
 import { ClientTreeView } from '@/features/clients/components/client-tree-view';
@@ -30,7 +31,10 @@ export default async function ClientsPage({
             <Link href="/clients/new" className="rounded bg-slate-900 px-3 py-2 text-sm text-white">
               Nouveau client
             </Link>
-            <button className="rounded border border-slate-300 px-3 py-2 text-sm">Export (placeholder)</button>
+            <Button>
+              Export (placeholder)
+              {/* TODO(step-imports): remplacer par export CSV/Excel piloté par les filtres actifs. */}
+            </Button>
           </div>
           <div className="flex gap-2 text-sm">
             <Link href="/clients?view=table" className={`rounded px-3 py-2 ${view !== 'tree' ? 'bg-slate-900 text-white' : 'bg-slate-100'}`}>
