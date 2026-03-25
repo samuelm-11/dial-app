@@ -1,10 +1,23 @@
 import { PageContainer } from '@/components/layout/page-container';
-import { PlaceholderState } from '@/components/ui/placeholder-state';
+import { ContractFilters, getContractFiltersFromSearchParams } from '@/features/contracts/components/contract-filters';
+import { ContractTable } from '@/features/contracts/components/contract-table';
+import { getContracts } from '@/features/contracts/queries';
 
-export default function ContractsPage() {
+export default async function ContractsPage({
+  searchParams
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const resolvedSearchParams = await searchParams;
+  const filters = getContractFiltersFromSearchParams(resolvedSearchParams);
+  const contracts = await getContracts(filters);
+
   return (
     <PageContainer title="Contrats">
-      <PlaceholderState message="Liste des contrats et alertes de fin de contrat à implémenter." />
+      <div className="space-y-4">
+        <ContractFilters />
+        <ContractTable contracts={contracts} />
+      </div>
     </PageContainer>
   );
 }
