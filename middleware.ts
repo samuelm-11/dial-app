@@ -1,4 +1,10 @@
 import { type NextRequest, NextResponse } from 'next/server';
+
+type CookiePayload = {
+  name: string;
+  value: string;
+  options?: Parameters<NextResponse['cookies']['set']>[2];
+};
 import { createServerClient } from '@supabase/ssr';
 
 const protectedPaths = [
@@ -22,8 +28,8 @@ export async function middleware(req: NextRequest) {
     {
       cookies: {
         getAll: () => req.cookies.getAll(),
-        setAll: (cookiesToSet) => {
-          cookiesToSet.forEach(({ name, value, options }) => req.cookies.set(name, value));
+        setAll: (cookiesToSet: CookiePayload[]) => {
+          cookiesToSet.forEach(({ name, value }) => req.cookies.set(name, value));
           res = NextResponse.next({ request: req });
           cookiesToSet.forEach(({ name, value, options }) => res.cookies.set(name, value, options));
         }

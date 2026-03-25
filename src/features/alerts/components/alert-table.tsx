@@ -1,7 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { useTransition } from 'react';
+import { useState, useTransition } from 'react';
+import { Button } from '@/components/ui/button';
+import { StatePanel } from '@/components/ui/state-panel';
+import { TableShell } from '@/components/ui/table-shell';
 import { dismissAlert, markAlertDone } from '@/features/alerts/actions';
 import { AlertStatusBadge } from '@/features/alerts/components/alert-status-badge';
 import type { Alert } from '@/types/alert';
@@ -20,27 +23,39 @@ function dueLabel(daysRemaining: number) {
 
 export function AlertTable({ alerts, title }: { alerts: Alert[]; title?: string }) {
   const [isPending, startTransition] = useTransition();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const onMarkDone = (alertId: string) => {
+    setErrorMessage(null);
     startTransition(async () => {
-      await markAlertDone(alertId);
+      try {
+        await markAlertDone(alertId);
+      } catch {
+        setErrorMessage('Impossible de marquer l’alerte comme traitée. Réessayez.');
+      }
     });
   };
 
   const onDismiss = (alertId: string) => {
+    setErrorMessage(null);
     startTransition(async () => {
-      await dismissAlert(alertId);
+      try {
+        await dismissAlert(alertId);
+      } catch {
+        setErrorMessage('Impossible d’ignorer l’alerte pour le moment.');
+      }
     });
   };
 
   if (!alerts.length) {
-    return <p className="rounded border border-dashed p-4 text-sm text-slate-500">Aucune alerte dans cette section.</p>;
+    return <StatePanel message="Aucune alerte dans cette section." variant="empty" />;
   }
 
   return (
     <div className="space-y-2">
       {title ? <h3 className="text-sm font-semibold text-slate-900">{title}</h3> : null}
-      <div className="overflow-x-auto rounded border border-slate-200">
+      {errorMessage ? <StatePanel message={errorMessage} variant="error" /> : null}
+      <TableShell>
         <table className="min-w-full border-collapse text-sm">
           <thead>
             <tr className="border-b bg-slate-50 text-left text-slate-600">
@@ -77,12 +92,12 @@ export function AlertTable({ alerts, title }: { alerts: Alert[]; title?: string 
                   <div className="flex flex-wrap gap-2">
                     {alert.status === 'open' ? (
                       <>
-                        <button disabled={isPending} onClick={() => onMarkDone(alert.id)} className="rounded border border-emerald-300 px-2 py-1 text-xs text-emerald-700">
-                          {isPending ? '...' : 'Marquer traité'}
-                        </button>
-                        <button disabled={isPending} onClick={() => onDismiss(alert.id)} className="rounded border border-slate-300 px-2 py-1 text-xs text-slate-700">
-                          {isPending ? '...' : 'Ignorer'}
-                        </button>
+                        <Button variant="success" size="sm" disabled={isPending} onClick={() => onMarkDone(alert.id)}>
+                          {isPending ? 'Chargement...' : 'Marquer traité'}
+                        </Button>
+                        <Button size="sm" disabled={isPending} onClick={() => onDismiss(alert.id)}>
+                          {isPending ? 'Chargement...' : 'Ignorer'}
+                        </Button>
                       </>
                     ) : null}
                     <Link href={`/clients/${alert.clientId}`} className="rounded border border-slate-300 px-2 py-1 text-xs text-slate-700">
@@ -104,7 +119,7 @@ export function AlertTable({ alerts, title }: { alerts: Alert[]; title?: string 
             ))}
           </tbody>
         </table>
-      </div>
+      </TableShell>
     </div>
   );
 }

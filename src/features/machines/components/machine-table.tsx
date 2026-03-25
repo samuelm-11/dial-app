@@ -1,5 +1,8 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
+import { StatePanel } from '@/components/ui/state-panel';
+import { TableShell } from '@/components/ui/table-shell';
 import { formatDate, machineStatusLabels } from '@/features/machines/helpers';
 import type { ClientMachine } from '@/types/machine';
 
@@ -15,11 +18,11 @@ export function MachineTable({
   onChangeFilter: (machine: ClientMachine) => void;
 }) {
   if (!machines.length) {
-    return <p className="rounded border border-dashed border-slate-300 p-4 text-sm text-slate-600">Aucune machine enregistrée.</p>;
+    return <StatePanel message="Aucune machine enregistrée." variant="empty" />;
   }
 
   return (
-    <div className="overflow-x-auto rounded border border-slate-200">
+    <TableShell>
       <table className="min-w-full text-sm">
         <thead className="bg-slate-100 text-left text-xs uppercase text-slate-600">
           <tr>
@@ -47,21 +50,21 @@ export function MachineTable({
               <td className="px-3 py-2 text-slate-600">{machine.notes || '—'}</td>
               <td className="px-3 py-2">
                 <div className="flex flex-wrap gap-2">
-                  <button className="rounded border border-slate-300 px-2 py-1 text-xs" onClick={() => onEdit(machine)}>
+                  <Button size="sm" onClick={() => onEdit(machine)}>
                     Modifier
-                  </button>
-                  <button className="rounded border border-slate-300 px-2 py-1 text-xs" onClick={() => onChangeFilter(machine)}>
+                  </Button>
+                  <Button size="sm" onClick={() => onChangeFilter(machine)}>
                     Changer filtre
-                  </button>
-                  <button className="rounded border border-rose-300 px-2 py-1 text-xs text-rose-700" onClick={() => onRemove(machine)}>
+                  </Button>
+                  <Button size="sm" variant="danger" onClick={() => onRemove(machine)}>
                     Retirer
-                  </button>
+                  </Button>
                 </div>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-    </div>
+    </TableShell>
   );
 }

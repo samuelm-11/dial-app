@@ -1,14 +1,17 @@
 import Link from 'next/link';
-import { clientCategoryLabels, clientFlagBadgeClass, clientFlagLabels } from '@/features/clients/helpers';
+import { Badge } from '@/components/ui/badge';
+import { StatePanel } from '@/components/ui/state-panel';
+import { TableShell } from '@/components/ui/table-shell';
+import { clientCategoryLabels, clientFlagLabels } from '@/features/clients/helpers';
 import type { Client } from '@/types/client';
 
 export function ClientTable({ clients }: { clients: Client[] }) {
   if (clients.length === 0) {
-    return <p className="rounded border border-dashed p-6 text-sm text-slate-500">Aucun client trouvé avec ces filtres.</p>;
+    return <StatePanel message="Aucun client trouvé avec ces filtres." variant="empty" />;
   }
 
   return (
-    <div className="overflow-x-auto">
+    <TableShell>
       <table className="min-w-full border-collapse text-sm">
         <thead>
           <tr className="border-b bg-slate-50 text-left text-slate-600">
@@ -32,9 +35,7 @@ export function ClientTable({ clients }: { clients: Client[] }) {
               <td className="px-3 py-2 text-slate-700">{client.city}</td>
               <td className="px-3 py-2 text-slate-700">{clientCategoryLabels[client.category]}</td>
               <td className="px-3 py-2">
-                <span className={`rounded-full px-2 py-1 text-xs font-medium ${clientFlagBadgeClass[client.flag]}`}>
-                  {clientFlagLabels[client.flag]}
-                </span>
+                <Badge label={clientFlagLabels[client.flag]} tone={client.flag === 'risk' ? 'danger' : client.flag === 'watch' ? 'warning' : client.flag === 'vip' ? 'success' : 'neutral'} />
               </td>
               <td className="px-3 py-2 text-slate-700">{client.hasContract ? 'Oui' : 'Non'}</td>
               <td className="px-3 py-2 text-slate-700">{client.openOpportunities}</td>
@@ -43,6 +44,6 @@ export function ClientTable({ clients }: { clients: Client[] }) {
           ))}
         </tbody>
       </table>
-    </div>
+    </TableShell>
   );
 }

@@ -1,3 +1,5 @@
+import { StatePanel } from '@/components/ui/state-panel';
+import { TableShell } from '@/components/ui/table-shell';
 import { UserForm } from '@/features/users/components/user-form';
 import { UserRoleBadge } from '@/features/users/components/user-role-badge';
 import type { UserListItem } from '@/types/user';
@@ -16,11 +18,11 @@ type UserTableProps = {
 
 export function UserTable({ users, canManage, currentUserId }: UserTableProps) {
   if (users.length === 0) {
-    return <p className="rounded border border-dashed p-6 text-sm text-slate-500">Aucun utilisateur trouvé.</p>;
+    return <StatePanel message="Aucun utilisateur trouvé." variant="empty" />;
   }
 
   return (
-    <div className="overflow-x-auto rounded border border-slate-200 bg-white">
+    <TableShell>
       <table className="min-w-full border-collapse text-sm">
         <thead>
           <tr className="border-b bg-slate-50 text-left text-slate-600">
@@ -58,6 +60,6 @@ export function UserTable({ users, canManage, currentUserId }: UserTableProps) {
           })}
         </tbody>
       </table>
-    </div>
+    </TableShell>
   );
 }
