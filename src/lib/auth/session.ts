@@ -3,6 +3,20 @@ import type { User } from '@supabase/supabase-js';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import type { UserProfile } from '@/types/auth';
 
+function buildFallbackProfile(user: User): UserProfile {
+  const now = new Date().toISOString();
+
+  return {
+    id: user.id,
+    email: user.email ?? '',
+    fullName: (user.user_metadata?.full_name as string | undefined) ?? null,
+    role: 'viewer',
+    isActive: true,
+    createdAt: user.created_at ?? now,
+    updatedAt: now
+  };
+}
+
 export const getSessionUser = cache(async (): Promise<User | null> => {
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase.auth.getUser();
@@ -12,17 +26,19 @@ export const getSessionUser = cache(async (): Promise<User | null> => {
 
 export const getCurrentUserProfile = cache(async (): Promise<UserProfile | null> => {
   const supabase = await createSupabaseServerClient();
-  const { data } = await supabase.auth.getUser();
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
 
-  if (!data.user) {
+  if (!user) {
     return null;
   }
 
   const { data: profile, error } = await supabase
     .from('profiles')
     .select('id, full_name, role, is_active, created_at, updated_at')
-    .eq('id', data.user.id)
-    .single();
+    .eq('id', user.id)
+    .maybeSingle();
 
   if (error) {
     console.error('Error fetching profile:', error);
@@ -30,12 +46,12 @@ export const getCurrentUserProfile = cache(async (): Promise<UserProfile | null>
   }
 
   if (!profile) {
-    return null;
+    return buildFallbackProfile(user);
   }
 
   return {
     id: profile.id,
-    email: data.user.email ?? '',
+    email: user.email ?? '',
     fullName: profile.full_name,
     role: profile.role,
     isActive: profile.is_active,
