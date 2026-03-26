@@ -8,7 +8,6 @@ type CookieToSet = {
 };
 
 const protectedPaths = [
-  '/',
   '/dashboard',
   '/clients',
   '/contracts',
@@ -50,20 +49,24 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  await supabase.auth.getUser();
-
-  const pathname = request.nextUrl.pathname;
-  const isProtected = protectedPaths.some((path) =>
-    path === '/' ? pathname === '/' : pathname.startsWith(path)
-  );
-
+  // Un seul appel — nécessaire pour rafraîchir le token si expiré
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
+  const pathname = request.nextUrl.pathname;
+  const isProtected = protectedPaths.some((path) => pathname.startsWith(path));
+
   if (isProtected && !user) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
+    return NextResponse.redirect(url);
+  }
+
+  // Redirige / vers /dashboard ou /login selon la session
+  if (pathname === '/') {
+    const url = request.nextUrl.clone();
+    url.pathname = user ? '/dashboard' : '/login';
     return NextResponse.redirect(url);
   }
 
