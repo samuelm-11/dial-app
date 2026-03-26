@@ -1,26 +1,4 @@
-import { createSupabaseServerClient } from '@/lib/supabase/server';
-
-export default async function DashboardPage() {
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
-
-  return (
-    <pre style={{ padding: 24, whiteSpace: 'pre-wrap' }}>
-      {JSON.stringify(
-        {
-          user: user ? { id: user.id, email: user.email } : null,
-          error: error?.message ?? null,
-        },
-        null,
-        2
-      )}
-    </pre>
-  );
-}
-/* import Link from 'next/link';
+import Link from 'next/link';
 import { PageContainer } from '@/components/layout/page-container';
 import { getAlerts, getUrgentAlerts } from '@/features/alerts/queries';
 import { getClients } from '@/features/clients/queries';
@@ -34,7 +12,9 @@ export default async function DashboardPage() {
     getClients({ flags: ['risk'] })
   ]);
 
-  const filterDueSoon = allOpenAlerts.filter((alert) => alert.type === 'filter_change' && (alert.dueBucket === 'urgent' || alert.dueBucket === 'upcoming'));
+  const filterDueSoon = allOpenAlerts.filter(
+    (alert) => alert.type === 'filter_change' && (alert.dueBucket === 'urgent' || alert.dueBucket === 'upcoming')
+  );
 
   return (
     <PageContainer title="Dashboard">
@@ -104,4 +84,3 @@ export default async function DashboardPage() {
     </PageContainer>
   );
 }
-*/

@@ -1,15 +1,4 @@
-import { NextResponse, type NextRequest } from 'next/server';
-
-export function middleware(_request: NextRequest) {
-  return NextResponse.next();
-}
-
-export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
-};
-
-
-/* import { type NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 
 type CookieToSet = {
@@ -27,12 +16,12 @@ const protectedPaths = [
   '/imports',
   '/settings',
   '/users',
-  '/account',
+  '/account'
 ];
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
-    request,
+    request
   });
 
   const supabase = createServerClient(
@@ -49,20 +38,19 @@ export async function middleware(request: NextRequest) {
           });
 
           response = NextResponse.next({
-            request,
+            request
           });
 
           cookiesToSet.forEach(({ name, value, options }) => {
             response.cookies.set(name, value, options);
           });
-        },
-      },
+        }
+      }
     }
   );
 
-  // Un seul appel — nécessaire pour rafraîchir le token si expiré
   const {
-    data: { user },
+    data: { user }
   } = await supabase.auth.getUser();
 
   const pathname = request.nextUrl.pathname;
@@ -74,7 +62,6 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Redirige / vers /dashboard ou /login selon la session
   if (pathname === '/') {
     const url = request.nextUrl.clone();
     url.pathname = user ? '/dashboard' : '/login';
@@ -85,6 +72,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)']
 };
-*/
