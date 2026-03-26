@@ -2,15 +2,13 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { loginSchema, type LoginFormValues } from '@/features/auth/validation';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { loginAction } from '@/features/auth/actions/auth-actions';
 
 export function LoginForm() {
   const [serverError, setServerError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '' }
@@ -20,18 +18,15 @@ export function LoginForm() {
     setServerError(null);
     setIsLoading(true);
 
-    const supabase = createSupabaseBrowserClient();
-    const { error } = await supabase.auth.signInWithPassword(values);
+    // Server Action — les cookies sont écrits côté serveur,
+    // ce qui garantit que le middleware SSR les voit immédiatement.
+    const result = await loginAction(values.email, values.password);
 
+    // Si on arrive ici, c'est qu'il y a eu une erreur (loginAction redirige en cas de succès)
     setIsLoading(false);
-
-    if (error) {
-      setServerError(error.message);
-      return;
+    if (result?.error) {
+      setServerError(result.error);
     }
-
-    router.push('/dashboard');
-    router.refresh();
   });
 
   return (
