@@ -1,8 +1,25 @@
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 export default async function DashboardPage() {
-  const supabase = await createSupabase
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
 
+  return (
+    <pre style={{ padding: 24, whiteSpace: 'pre-wrap' }}>
+      {JSON.stringify(
+        {
+          user: user ? { id: user.id, email: user.email } : null,
+          error: error?.message ?? null,
+        },
+        null,
+        2
+      )}
+    </pre>
+  );
+}
 /* import Link from 'next/link';
 import { PageContainer } from '@/components/layout/page-container';
 import { getAlerts, getUrgentAlerts } from '@/features/alerts/queries';
