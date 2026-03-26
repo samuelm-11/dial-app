@@ -1,4 +1,9 @@
-import Link from 'next/link';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
+
+export default async function DashboardPage() {
+  const supabase = await createSupabase
+
+/* import Link from 'next/link';
 import { PageContainer } from '@/components/layout/page-container';
 import { getAlerts, getUrgentAlerts } from '@/features/alerts/queries';
 import { getClients } from '@/features/clients/queries';
@@ -82,3 +87,4 @@ export default async function DashboardPage() {
     </PageContainer>
   );
 }
+*/
