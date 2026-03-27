@@ -9,12 +9,12 @@ export function AppShell({ profile, children }: { profile: UserProfile; children
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen overflow-x-hidden bg-slate-50">
+    <div className="flex min-h-screen overflow-x-hidden bg-background">
       <AppSidebar isMobileMenuOpen={isMobileMenuOpen} onCloseMobileMenu={() => setIsMobileMenuOpen(false)} />
 
       <div className="flex min-w-0 flex-1 flex-col">
         <AppHeader profile={profile} onOpenMobileMenu={() => setIsMobileMenuOpen(true)} />
-        <main className="min-w-0 flex-1">{children}</main>
+        <main className="min-w-0 flex-1 px-2 pb-6 pt-3 sm:px-4 lg:px-6">{children}</main>
       </div>
     </div>
   );
