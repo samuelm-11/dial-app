@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { StatePanel } from '@/components/ui/state-panel';
+import { Table } from '@/components/ui/table';
 import { TableShell } from '@/components/ui/table-shell';
 import { clientCategoryLabels, clientFlagLabels } from '@/features/clients/helpers';
 import type { Client } from '@/types/client';
@@ -12,38 +13,41 @@ export function ClientTable({ clients }: { clients: Client[] }) {
 
   return (
     <TableShell>
-      <table className="min-w-[760px] border-collapse text-sm md:min-w-full">
+      <Table className="text-sm">
         <thead>
-          <tr className="border-b bg-slate-50 text-left text-slate-600">
-            <th className="whitespace-nowrap px-3 py-2">Client</th>
-            <th className="whitespace-nowrap px-3 py-2">Ville</th>
-            <th className="whitespace-nowrap px-3 py-2">Catégorie</th>
-            <th className="whitespace-nowrap px-3 py-2">Flag</th>
-            <th className="whitespace-nowrap px-3 py-2">Contrat</th>
-            <th className="whitespace-nowrap px-3 py-2">Opportunités</th>
-            <th className="whitespace-nowrap px-3 py-2">Alertes</th>
+          <tr className="border-b bg-slate-50 text-left">
+            <th className="whitespace-nowrap px-4 py-3">Client</th>
+            <th className="whitespace-nowrap px-4 py-3">Ville</th>
+            <th className="whitespace-nowrap px-4 py-3">Catégorie</th>
+            <th className="whitespace-nowrap px-4 py-3">Flag</th>
+            <th className="whitespace-nowrap px-4 py-3">Contrat</th>
+            <th className="whitespace-nowrap px-4 py-3">Opportunités</th>
+            <th className="whitespace-nowrap px-4 py-3">Alertes</th>
           </tr>
         </thead>
         <tbody>
           {clients.map((client) => (
-            <tr key={client.id} className="border-b border-slate-100">
-              <td className="px-3 py-2 font-medium text-slate-900">
+            <tr key={client.id} className="border-b border-slate-100 hover:bg-slate-50/70">
+              <td className="px-4 py-3 font-medium text-primary">
                 <Link href={`/clients/${client.id}`} className="hover:underline">
                   {client.name}
                 </Link>
               </td>
-              <td className="whitespace-nowrap px-3 py-2 text-slate-700">{client.city}</td>
-              <td className="whitespace-nowrap px-3 py-2 text-slate-700">{clientCategoryLabels[client.category]}</td>
-              <td className="whitespace-nowrap px-3 py-2">
-                <Badge label={clientFlagLabels[client.flag]} tone={client.flag === 'risk' ? 'danger' : client.flag === 'watch' ? 'warning' : client.flag === 'vip' ? 'success' : 'neutral'} />
+              <td className="whitespace-nowrap px-4 py-3">{client.city}</td>
+              <td className="whitespace-nowrap px-4 py-3">{clientCategoryLabels[client.category]}</td>
+              <td className="whitespace-nowrap px-4 py-3">
+                <Badge
+                  label={clientFlagLabels[client.flag]}
+                  tone={client.flag === 'risk' ? 'danger' : client.flag === 'watch' ? 'warning' : client.flag === 'vip' ? 'success' : 'neutral'}
+                />
               </td>
-              <td className="whitespace-nowrap px-3 py-2 text-slate-700">{client.hasContract ? 'Oui' : 'Non'}</td>
-              <td className="whitespace-nowrap px-3 py-2 text-slate-700">{client.openOpportunities}</td>
-              <td className="whitespace-nowrap px-3 py-2 text-slate-700">{client.openAlerts}</td>
+              <td className="whitespace-nowrap px-4 py-3">{client.hasContract ? 'Oui' : 'Non'}</td>
+              <td className="whitespace-nowrap px-4 py-3">{client.openOpportunities}</td>
+              <td className="whitespace-nowrap px-4 py-3">{client.openAlerts}</td>
             </tr>
           ))}
         </tbody>
-      </table>
+      </Table>
     </TableShell>
   );
 }

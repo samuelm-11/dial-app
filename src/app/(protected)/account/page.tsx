@@ -1,4 +1,7 @@
 import { PageContainer } from '@/components/layout/page-container';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { logoutAction } from '@/features/auth/actions/auth-actions';
 import { UserRoleBadge } from '@/features/users/components/user-role-badge';
 import { getMyAccountSummary } from '@/features/users/queries';
@@ -11,54 +14,47 @@ export default async function AccountPage() {
   if (!account) {
     return (
       <PageContainer title="Mon compte">
-        <p className="rounded border border-dashed p-6 text-sm text-slate-500">Impossible de charger le compte utilisateur.</p>
+        <p className="rounded-2xl border border-dashed p-6 text-sm text-slate-500">Impossible de charger le compte utilisateur.</p>
       </PageContainer>
     );
   }
 
   return (
     <PageContainer title="Mon compte">
-      <div className="mx-auto w-full max-w-2xl space-y-4">
-        <div className="rounded border border-slate-200 bg-white p-4 sm:p-5">
-          <dl className="space-y-3 text-sm">
+      <div className="mx-auto w-full max-w-3xl space-y-5">
+        <Card>
+          <CardHeader>
             <div>
-              <dt className="text-slate-500">Nom</dt>
-              <dd className="break-words font-medium text-slate-900">{account.fullName ?? '—'}</dd>
+              <CardTitle>Profil utilisateur</CardTitle>
+              <CardDescription>Informations liées à votre accès à la plateforme Dial Services.</CardDescription>
             </div>
-            <div>
-              <dt className="text-slate-500">Email</dt>
-              <dd className="break-all font-medium text-slate-900">{account.email}</dd>
+            <div className="flex items-center gap-2">
+              <UserRoleBadge role={account.role} />
+              <Badge label={account.status === 'active' ? 'Actif' : 'Inactif'} tone={account.status === 'active' ? 'success' : 'neutral'} />
             </div>
-            <div>
-              <dt className="text-slate-500">Rôle</dt>
-              <dd className="pt-1">
-                <UserRoleBadge role={account.role} />
-              </dd>
+          </CardHeader>
+
+          <dl className="grid gap-4 text-sm sm:grid-cols-2">
+            <div className="rounded-xl border border-muted bg-slate-50 p-4">
+              <dt className="text-xs uppercase tracking-wide text-slate-500">Nom</dt>
+              <dd className="mt-1 break-words text-base font-semibold text-primary">{account.fullName ?? '—'}</dd>
             </div>
-            <div>
-              <dt className="text-slate-500">Statut</dt>
-              <dd>
-                <span className={`inline-flex rounded px-2 py-1 text-xs ${account.status === 'active' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-700'}`}>
-                  {account.status === 'active' ? 'Actif' : 'Inactif'}
-                </span>
-              </dd>
+            <div className="rounded-xl border border-muted bg-slate-50 p-4">
+              <dt className="text-xs uppercase tracking-wide text-slate-500">Email</dt>
+              <dd className="mt-1 break-all text-base font-semibold text-primary">{account.email}</dd>
             </div>
           </dl>
-        </div>
+        </Card>
 
         <div className="flex flex-col gap-2 sm:flex-row">
           <form action={logoutAction} className="w-full sm:w-auto">
-            <button type="submit" className="w-full rounded border border-slate-300 px-3 py-2 text-sm hover:bg-slate-100 sm:w-auto">
+            <Button type="submit" variant="primary" className="w-full sm:w-auto">
               Se déconnecter
-            </button>
+            </Button>
           </form>
-          <button
-            type="button"
-            disabled
-            className="w-full rounded border border-dashed border-slate-300 px-3 py-2 text-sm text-slate-500 sm:w-auto"
-          >
+          <Button type="button" disabled variant="ghost" className="w-full border border-dashed border-muted text-slate-500 sm:w-auto">
             Changer le mot de passe (bientôt)
-          </button>
+          </Button>
         </div>
       </div>
     </PageContainer>
