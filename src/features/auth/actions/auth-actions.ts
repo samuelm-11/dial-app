@@ -2,7 +2,10 @@
 
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
-export async function loginAction(email: string, password: string): Promise<{ error: string | null; success?: boolean }> {
+export async function loginAction(
+  email: string,
+  password: string
+): Promise<{ error: string | null; success?: boolean }> {
   const supabase = await createSupabaseServerClient();
 
   const { error } = await supabase.auth.signInWithPassword({ email, password });
