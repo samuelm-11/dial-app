@@ -23,15 +23,15 @@ export function UserTable({ users, canManage, currentUserId }: UserTableProps) {
 
   return (
     <TableShell>
-      <table className="min-w-full border-collapse text-sm">
+      <table className="min-w-[760px] border-collapse text-sm md:min-w-full">
         <thead>
           <tr className="border-b bg-slate-50 text-left text-slate-600">
-            <th className="px-3 py-2">Nom</th>
-            <th className="px-3 py-2">Email</th>
-            <th className="px-3 py-2">Rôle</th>
-            <th className="px-3 py-2">Statut</th>
-            <th className="px-3 py-2">Création</th>
-            <th className="px-3 py-2">Actions</th>
+            <th className="whitespace-nowrap px-3 py-2">Nom</th>
+            <th className="whitespace-nowrap px-3 py-2">Email</th>
+            <th className="whitespace-nowrap px-3 py-2">Rôle</th>
+            <th className="whitespace-nowrap px-3 py-2">Statut</th>
+            <th className="whitespace-nowrap px-3 py-2">Création</th>
+            <th className="whitespace-nowrap px-3 py-2">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -41,16 +41,16 @@ export function UserTable({ users, canManage, currentUserId }: UserTableProps) {
             return (
               <tr key={user.id} className="border-b border-slate-100 align-top">
                 <td className="px-3 py-2 font-medium text-slate-900">{user.fullName ?? '—'}</td>
-                <td className="px-3 py-2 text-slate-700">{user.email}</td>
-                <td className="px-3 py-2">
+                <td className="px-3 py-2 text-slate-700"><span className="block min-w-[14rem] break-all">{user.email}</span></td>
+                <td className="whitespace-nowrap px-3 py-2">
                   <UserRoleBadge role={user.role} />
                 </td>
-                <td className="px-3 py-2">
+                <td className="whitespace-nowrap px-3 py-2">
                   <span className={`rounded px-2 py-1 text-xs ${user.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-700'}`}>
                     {user.isActive ? 'Actif' : 'Inactif'}
                   </span>
                 </td>
-                <td className="px-3 py-2 text-slate-700">{dateFormatter.format(new Date(user.createdAt))}</td>
+                <td className="whitespace-nowrap px-3 py-2 text-slate-700">{dateFormatter.format(new Date(user.createdAt))}</td>
                 <td className="space-y-2 px-3 py-2">
                   {canManage ? <UserForm user={user} isCurrentUser={isCurrentUser} /> : <p className="text-xs text-slate-500">Lecture seule</p>}
                   {isCurrentUser ? <p className="text-xs text-slate-500">Votre compte ne peut pas être désactivé.</p> : null}

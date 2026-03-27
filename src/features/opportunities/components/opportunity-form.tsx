@@ -78,7 +78,7 @@ export function OpportunityForm({
         <input className="rounded border border-slate-300 px-3 py-2 text-sm md:col-span-2" placeholder="Titre de l'opportunité" {...register('title')} />
         <textarea className="rounded border border-slate-300 px-3 py-2 text-sm md:col-span-2" rows={3} placeholder="Description" {...register('description')} />
 
-        <select className="rounded border border-slate-300 px-3 py-2 text-sm" {...register('linkedMachineCategoryId')}>
+        <select className="w-full rounded border border-slate-300 px-3 py-2 text-sm" {...register('linkedMachineCategoryId')}>
           <option value="">Catégorie machine liée (optionnel)</option>
           {machineCategoryOptions.map((category) => (
             <option key={category.id} value={category.id}>
@@ -87,7 +87,7 @@ export function OpportunityForm({
           ))}
         </select>
 
-        <select className="rounded border border-slate-300 px-3 py-2 text-sm" {...register('priority')}>
+        <select className="w-full rounded border border-slate-300 px-3 py-2 text-sm" {...register('priority')}>
           {opportunityPriorityValues.map((value) => (
             <option key={value} value={value}>
               Priorité: {priorityLabels[value]}
@@ -95,7 +95,7 @@ export function OpportunityForm({
           ))}
         </select>
 
-        <select className="rounded border border-slate-300 px-3 py-2 text-sm" {...register('status')}>
+        <select className="w-full rounded border border-slate-300 px-3 py-2 text-sm" {...register('status')}>
           {opportunityStatusValues.map((value) => (
             <option key={value} value={value}>
               Statut: {value}
@@ -107,7 +107,7 @@ export function OpportunityForm({
           type="number"
           min={0}
           step="100"
-          className="rounded border border-slate-300 px-3 py-2 text-sm"
+          className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
           placeholder="Valeur estimée (€)"
           {...register('estimatedValue', { valueAsNumber: true })}
         />
@@ -116,7 +116,7 @@ export function OpportunityForm({
           type="number"
           min={0}
           max={100}
-          className="rounded border border-slate-300 px-3 py-2 text-sm"
+          className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
           placeholder="Probabilité (%)"
           {...register('probability', { valueAsNumber: true })}
         />
@@ -124,7 +124,7 @@ export function OpportunityForm({
 
       {Object.keys(errors).length > 0 ? <p className="text-xs text-rose-600">Merci de corriger les champs opportunité.</p> : null}
 
-      <button className="rounded bg-slate-900 px-3 py-2 text-sm text-white disabled:opacity-60" disabled={isPending}>
+      <button className="w-full rounded bg-slate-900 px-3 py-2 text-sm text-white disabled:opacity-60 sm:w-auto" disabled={isPending}>
         {isPending ? 'Enregistrement...' : opportunity ? "Mettre à jour l'opportunité" : 'Créer une opportunité'}
       </button>
     </form>

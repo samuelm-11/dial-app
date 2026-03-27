@@ -138,8 +138,8 @@ export function ClientFilters({
 
       <MachineFiltersPanel categories={machineCategories} types={machineTypes} />
 
-      <div className="flex justify-end">
-        <button className="rounded border border-slate-300 px-3 py-2 text-sm" onClick={resetFilters}>
+      <div className="flex justify-stretch sm:justify-end">
+        <button className="w-full rounded border border-slate-300 px-3 py-2 text-sm sm:w-auto" onClick={resetFilters}>
           Réinitialiser les filtres
         </button>
       </div>

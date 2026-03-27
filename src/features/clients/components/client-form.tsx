@@ -143,11 +143,11 @@ export function ClientForm({
         </div>
       ) : null}
 
-      <div className="flex justify-end gap-2">
-        <button type="button" className="rounded border border-slate-300 px-4 py-2 text-sm" onClick={() => router.back()}>
+      <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+        <button type="button" className="w-full rounded border border-slate-300 px-4 py-2 text-sm sm:w-auto" onClick={() => router.back()}>
           Annuler
         </button>
-        <button type="submit" disabled={isPending} className="rounded bg-slate-900 px-4 py-2 text-sm text-white disabled:opacity-60">
+        <button type="submit" disabled={isPending} className="w-full rounded bg-slate-900 px-4 py-2 text-sm text-white disabled:opacity-60 sm:w-auto">
           {isPending ? 'Enregistrement...' : mode === 'create' ? 'Créer le client' : 'Enregistrer'}
         </button>
       </div>
