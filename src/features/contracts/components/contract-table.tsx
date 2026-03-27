@@ -11,18 +11,18 @@ export function ContractTable({ contracts }: { contracts: Contract[] }) {
 
   return (
     <TableShell>
-      <table className="min-w-full border-collapse text-sm">
+      <table className="min-w-[760px] border-collapse text-sm md:min-w-full">
         <thead>
           <tr className="border-b bg-slate-50 text-left text-slate-600">
-            <th className="px-3 py-2">Client</th>
-            <th className="px-3 py-2">Contrat</th>
-            <th className="px-3 py-2">Début</th>
-            <th className="px-3 py-2">Fin</th>
-            <th className="px-3 py-2">PDF</th>
-            <th className="px-3 py-2">Auto-renouvellement</th>
-            <th className="px-3 py-2">Ville</th>
-            <th className="px-3 py-2">Catégorie</th>
-            <th className="px-3 py-2">Flag</th>
+            <th className="whitespace-nowrap px-3 py-2">Client</th>
+            <th className="whitespace-nowrap px-3 py-2">Contrat</th>
+            <th className="whitespace-nowrap px-3 py-2">Début</th>
+            <th className="whitespace-nowrap px-3 py-2">Fin</th>
+            <th className="whitespace-nowrap px-3 py-2">PDF</th>
+            <th className="whitespace-nowrap px-3 py-2">Auto-renouvellement</th>
+            <th className="whitespace-nowrap px-3 py-2">Ville</th>
+            <th className="whitespace-nowrap px-3 py-2">Catégorie</th>
+            <th className="whitespace-nowrap px-3 py-2">Flag</th>
           </tr>
         </thead>
         <tbody>
@@ -33,14 +33,14 @@ export function ContractTable({ contracts }: { contracts: Contract[] }) {
                   {contract.clientName}
                 </Link>
               </td>
-              <td className="px-3 py-2 text-slate-700">{contract.title}</td>
-              <td className="px-3 py-2 text-slate-700">{contract.startDate}</td>
-              <td className="px-3 py-2 text-slate-700">{contract.endDate}</td>
-              <td className="px-3 py-2 text-slate-700">{contract.privatePdfPath ? 'Oui' : 'Non'}</td>
-              <td className="px-3 py-2 text-slate-700">{contract.autoRenewal ? 'Oui' : 'Non'}</td>
-              <td className="px-3 py-2 text-slate-700">{contract.clientCity ?? '—'}</td>
-              <td className="px-3 py-2 text-slate-700">{contract.clientCategory ? clientCategoryLabels[contract.clientCategory] : '—'}</td>
-              <td className="px-3 py-2 text-slate-700">{contract.clientFlag ? clientFlagLabels[contract.clientFlag] : '—'}</td>
+              <td className="whitespace-nowrap px-3 py-2 text-slate-700">{contract.title}</td>
+              <td className="whitespace-nowrap px-3 py-2 text-slate-700">{contract.startDate}</td>
+              <td className="whitespace-nowrap px-3 py-2 text-slate-700">{contract.endDate}</td>
+              <td className="whitespace-nowrap px-3 py-2 text-slate-700">{contract.privatePdfPath ? 'Oui' : 'Non'}</td>
+              <td className="whitespace-nowrap px-3 py-2 text-slate-700">{contract.autoRenewal ? 'Oui' : 'Non'}</td>
+              <td className="whitespace-nowrap px-3 py-2 text-slate-700">{contract.clientCity ?? '—'}</td>
+              <td className="whitespace-nowrap px-3 py-2 text-slate-700">{contract.clientCategory ? clientCategoryLabels[contract.clientCategory] : '—'}</td>
+              <td className="whitespace-nowrap px-3 py-2 text-slate-700">{contract.clientFlag ? clientFlagLabels[contract.clientFlag] : '—'}</td>
             </tr>
           ))}
         </tbody>

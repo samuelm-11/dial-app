@@ -66,7 +66,7 @@ export function ContractFilters() {
           Auto-renouvellement
         </label>
 
-        <button className="rounded border border-slate-300 px-3 py-2 text-sm" onClick={() => router.push('/contracts')}>
+        <button className="w-full rounded border border-slate-300 px-3 py-2 text-sm sm:w-auto" onClick={() => router.push('/contracts')}>
           Réinitialiser
         </button>
       </div>

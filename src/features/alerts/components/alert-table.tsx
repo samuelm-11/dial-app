@@ -56,23 +56,23 @@ export function AlertTable({ alerts, title }: { alerts: Alert[]; title?: string 
       {title ? <h3 className="text-sm font-semibold text-slate-900">{title}</h3> : null}
       {errorMessage ? <StatePanel message={errorMessage} variant="error" /> : null}
       <TableShell>
-        <table className="min-w-full border-collapse text-sm">
+        <table className="min-w-[760px] border-collapse text-sm md:min-w-full">
           <thead>
             <tr className="border-b bg-slate-50 text-left text-slate-600">
-              <th className="px-3 py-2">Alerte</th>
-              <th className="px-3 py-2">Client</th>
-              <th className="px-3 py-2">Type machine</th>
-              <th className="px-3 py-2">Échéance</th>
-              <th className="px-3 py-2">Statut</th>
-              <th className="px-3 py-2">Actions</th>
+              <th className="whitespace-nowrap px-3 py-2">Alerte</th>
+              <th className="whitespace-nowrap px-3 py-2">Client</th>
+              <th className="whitespace-nowrap px-3 py-2">Type machine</th>
+              <th className="whitespace-nowrap px-3 py-2">Échéance</th>
+              <th className="whitespace-nowrap px-3 py-2">Statut</th>
+              <th className="whitespace-nowrap px-3 py-2">Actions</th>
             </tr>
           </thead>
           <tbody>
             {alerts.map((alert) => (
               <tr key={alert.id} className="border-b border-slate-100 align-top">
                 <td className="px-3 py-2">
-                  <p className="font-medium text-slate-900">{alert.title}</p>
-                  <p className="text-xs text-slate-600">{alert.description}</p>
+                  <p className="min-w-[14rem] font-medium text-slate-900">{alert.title}</p>
+                  <p className="mt-1 max-w-xs text-xs text-slate-600">{alert.description}</p>
                 </td>
                 <td className="px-3 py-2 text-slate-700">
                   <Link href={`/clients/${alert.clientId}`} className="font-medium hover:underline">
@@ -80,15 +80,15 @@ export function AlertTable({ alerts, title }: { alerts: Alert[]; title?: string 
                   </Link>
                   {alert.clientPostalCode ? <p className="text-xs text-slate-500">CP {alert.clientPostalCode}</p> : null}
                 </td>
-                <td className="px-3 py-2 text-slate-700">{alert.machineTypeLabel ?? '—'}</td>
-                <td className="px-3 py-2 text-slate-700">
+                <td className="whitespace-nowrap px-3 py-2 text-slate-700">{alert.machineTypeLabel ?? '—'}</td>
+                <td className="whitespace-nowrap px-3 py-2 text-slate-700">
                   <p>{alert.dueDate}</p>
                   <p className="text-xs text-slate-500">{dueLabel(alert.daysRemaining)}</p>
                 </td>
-                <td className="px-3 py-2">
+                <td className="whitespace-nowrap px-3 py-2">
                   <AlertStatusBadge status={alert.status} />
                 </td>
-                <td className="px-3 py-2">
+                <td className="whitespace-nowrap px-3 py-2">
                   <div className="flex flex-wrap gap-2">
                     {alert.status === 'open' ? (
                       <>

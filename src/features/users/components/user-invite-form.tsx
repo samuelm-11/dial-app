@@ -36,15 +36,15 @@ export function UserInviteForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="rounded border border-dashed border-slate-300 bg-slate-50 p-3">
       <p className="text-xs font-medium text-slate-700">Inviter un utilisateur</p>
-      <div className="mt-2 flex flex-wrap items-center gap-2">
+      <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center">
         <input
           type="email"
           placeholder="nouvel.utilisateur@entreprise.fr"
-          className="w-full max-w-xs rounded border border-slate-300 px-2 py-1 text-xs"
+          className="w-full rounded border border-slate-300 px-2 py-1 text-xs sm:max-w-xs"
           {...register('email')}
           disabled={isPending}
         />
-        <button type="submit" className="rounded border border-slate-300 px-2 py-1 text-xs hover:bg-white disabled:opacity-60" disabled={isPending}>
+        <button type="submit" className="w-full rounded border border-slate-300 px-2 py-1 text-xs hover:bg-white disabled:opacity-60 sm:w-auto" disabled={isPending}>
           Préparer l'invitation
         </button>
       </div>

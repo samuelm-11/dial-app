@@ -28,17 +28,17 @@ export function OpportunityTable({ opportunities, showClient = true }: { opportu
     <div className="space-y-2">
       {errorMessage ? <StatePanel message={errorMessage} variant="error" /> : null}
       <TableShell>
-        <table className="min-w-full border-collapse text-sm">
+        <table className="min-w-[760px] border-collapse text-sm md:min-w-full">
           <thead>
             <tr className="border-b bg-slate-50 text-left text-slate-600">
-              {showClient ? <th className="px-3 py-2">Client</th> : null}
-              <th className="px-3 py-2">Titre</th>
-              <th className="px-3 py-2">Catégorie liée</th>
-              <th className="px-3 py-2">Priorité</th>
-              <th className="px-3 py-2">Statut</th>
-              <th className="px-3 py-2">Valeur (€)</th>
-              <th className="px-3 py-2">Probabilité</th>
-              <th className="px-3 py-2">Actions</th>
+              {showClient ? <th className="whitespace-nowrap px-3 py-2">Client</th> : null}
+              <th className="whitespace-nowrap px-3 py-2">Titre</th>
+              <th className="whitespace-nowrap px-3 py-2">Catégorie liée</th>
+              <th className="whitespace-nowrap px-3 py-2">Priorité</th>
+              <th className="whitespace-nowrap px-3 py-2">Statut</th>
+              <th className="whitespace-nowrap px-3 py-2">Valeur (€)</th>
+              <th className="whitespace-nowrap px-3 py-2">Probabilité</th>
+              <th className="whitespace-nowrap px-3 py-2">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -55,13 +55,13 @@ export function OpportunityTable({ opportunities, showClient = true }: { opportu
                   <p className="font-medium">{opportunity.title}</p>
                   {opportunity.description ? <p className="mt-1 max-w-sm text-xs text-slate-600">{opportunity.description}</p> : null}
                 </td>
-                <td className="px-3 py-2 text-slate-700">{opportunity.linkedMachineCategoryLabel ?? '—'}</td>
-                <td className="px-3 py-2 text-slate-700">{priorityLabels[opportunity.priority]}</td>
-                <td className="px-3 py-2">
+                <td className="whitespace-nowrap px-3 py-2 text-slate-700">{opportunity.linkedMachineCategoryLabel ?? '—'}</td>
+                <td className="whitespace-nowrap px-3 py-2 text-slate-700">{priorityLabels[opportunity.priority]}</td>
+                <td className="whitespace-nowrap px-3 py-2">
                   <OpportunityStatusBadge status={opportunity.status} />
                 </td>
-                <td className="px-3 py-2 text-slate-700">{opportunity.estimatedValue ? `${Math.round(opportunity.estimatedValue).toLocaleString('fr-FR')} €` : '—'}</td>
-                <td className="px-3 py-2 text-slate-700">{opportunity.probability !== null ? `${opportunity.probability}%` : '—'}</td>
+                <td className="whitespace-nowrap px-3 py-2 text-slate-700">{opportunity.estimatedValue ? `${Math.round(opportunity.estimatedValue).toLocaleString('fr-FR')} €` : '—'}</td>
+                <td className="whitespace-nowrap px-3 py-2 text-slate-700">{opportunity.probability !== null ? `${opportunity.probability}%` : '—'}</td>
                 <td className="space-y-2 px-3 py-2">
                   <select
                     className="w-full rounded border border-slate-300 px-2 py-1 text-xs"

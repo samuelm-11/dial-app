@@ -12,16 +12,16 @@ export function ClientTable({ clients }: { clients: Client[] }) {
 
   return (
     <TableShell>
-      <table className="min-w-full border-collapse text-sm">
+      <table className="min-w-[760px] border-collapse text-sm md:min-w-full">
         <thead>
           <tr className="border-b bg-slate-50 text-left text-slate-600">
-            <th className="px-3 py-2">Client</th>
-            <th className="px-3 py-2">Ville</th>
-            <th className="px-3 py-2">Catégorie</th>
-            <th className="px-3 py-2">Flag</th>
-            <th className="px-3 py-2">Contrat</th>
-            <th className="px-3 py-2">Opportunités</th>
-            <th className="px-3 py-2">Alertes</th>
+            <th className="whitespace-nowrap px-3 py-2">Client</th>
+            <th className="whitespace-nowrap px-3 py-2">Ville</th>
+            <th className="whitespace-nowrap px-3 py-2">Catégorie</th>
+            <th className="whitespace-nowrap px-3 py-2">Flag</th>
+            <th className="whitespace-nowrap px-3 py-2">Contrat</th>
+            <th className="whitespace-nowrap px-3 py-2">Opportunités</th>
+            <th className="whitespace-nowrap px-3 py-2">Alertes</th>
           </tr>
         </thead>
         <tbody>
@@ -32,14 +32,14 @@ export function ClientTable({ clients }: { clients: Client[] }) {
                   {client.name}
                 </Link>
               </td>
-              <td className="px-3 py-2 text-slate-700">{client.city}</td>
-              <td className="px-3 py-2 text-slate-700">{clientCategoryLabels[client.category]}</td>
-              <td className="px-3 py-2">
+              <td className="whitespace-nowrap px-3 py-2 text-slate-700">{client.city}</td>
+              <td className="whitespace-nowrap px-3 py-2 text-slate-700">{clientCategoryLabels[client.category]}</td>
+              <td className="whitespace-nowrap px-3 py-2">
                 <Badge label={clientFlagLabels[client.flag]} tone={client.flag === 'risk' ? 'danger' : client.flag === 'watch' ? 'warning' : client.flag === 'vip' ? 'success' : 'neutral'} />
               </td>
-              <td className="px-3 py-2 text-slate-700">{client.hasContract ? 'Oui' : 'Non'}</td>
-              <td className="px-3 py-2 text-slate-700">{client.openOpportunities}</td>
-              <td className="px-3 py-2 text-slate-700">{client.openAlerts}</td>
+              <td className="whitespace-nowrap px-3 py-2 text-slate-700">{client.hasContract ? 'Oui' : 'Non'}</td>
+              <td className="whitespace-nowrap px-3 py-2 text-slate-700">{client.openOpportunities}</td>
+              <td className="whitespace-nowrap px-3 py-2 text-slate-700">{client.openAlerts}</td>
             </tr>
           ))}
         </tbody>

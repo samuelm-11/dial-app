@@ -36,8 +36,8 @@ export function UserForm({ user, isCurrentUser }: UserFormProps) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
-      <div className="flex flex-wrap items-center gap-2">
-        <select className="rounded border border-slate-300 px-2 py-1 text-xs" {...register('role')} disabled={isPending}>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <select className="w-full rounded border border-slate-300 px-2 py-1 text-xs sm:w-auto" {...register('role')} disabled={isPending}>
           <option value="admin">Admin</option>
           <option value="manager">Manager</option>
           <option value="viewer">Lecture</option>
@@ -46,7 +46,7 @@ export function UserForm({ user, isCurrentUser }: UserFormProps) {
           <input type="checkbox" className="mr-1" {...register('isActive')} disabled={isPending || isCurrentUser} />
           Actif
         </label>
-        <button type="submit" className="rounded border border-slate-300 px-2 py-1 text-xs hover:bg-slate-100 disabled:opacity-60" disabled={isPending}>
+        <button type="submit" className="w-full rounded border border-slate-300 px-2 py-1 text-xs hover:bg-slate-100 disabled:opacity-60 sm:w-auto" disabled={isPending}>
           Enregistrer
         </button>
       </div>

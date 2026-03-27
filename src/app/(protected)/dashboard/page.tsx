@@ -19,7 +19,7 @@ export default async function DashboardPage() {
   return (
     <PageContainer title="Dashboard">
       <div className="space-y-4">
-        <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <div className="rounded border border-slate-200 bg-slate-50 p-4">
             <p className="text-xs uppercase text-slate-500">Filtres à changer bientôt</p>
             <p className="text-2xl font-semibold text-slate-900">{filterDueSoon.length}</p>
@@ -50,9 +50,9 @@ export default async function DashboardPage() {
           {urgentAlerts.length === 0 ? (
             <p className="mt-2 text-sm text-slate-500">Aucune alerte urgente.</p>
           ) : (
-            <ul className="mt-2 space-y-1 text-sm text-slate-700">
+            <ul className="mt-2 space-y-2 text-sm text-slate-700">
               {urgentAlerts.slice(0, 8).map((alert) => (
-                <li key={alert.id}>
+                <li key={alert.id} className="break-words">
                   <Link href={`/clients/${alert.clientId}`} className="hover:underline">
                     {alert.clientName}
                   </Link>{' '}
@@ -68,9 +68,9 @@ export default async function DashboardPage() {
           {contractsEndingSoon.length === 0 ? (
             <p className="mt-2 text-sm text-slate-500">Aucun contrat proche de fin.</p>
           ) : (
-            <ul className="mt-2 space-y-1 text-sm text-slate-700">
+            <ul className="mt-2 space-y-2 text-sm text-slate-700">
               {contractsEndingSoon.slice(0, 8).map((contract) => (
-                <li key={contract.id}>
+                <li key={contract.id} className="break-words">
                   <Link href={`/clients/${contract.clientId}`} className="hover:underline">
                     {contract.clientName}
                   </Link>{' '}

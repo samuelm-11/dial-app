@@ -132,7 +132,7 @@ export function OpportunityFilters({
           onBlur={(event) => setParam('probabilityMax', event.target.value)}
         />
 
-        <button className="rounded border border-slate-300 px-3 py-2 text-sm" onClick={() => router.push('/opportunities')}>
+        <button className="w-full rounded border border-slate-300 px-3 py-2 text-sm sm:w-auto" onClick={() => router.push('/opportunities')}>
           Réinitialiser
         </button>
       </div>
