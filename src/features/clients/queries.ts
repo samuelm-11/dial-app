@@ -5,110 +5,53 @@ import type { Contact } from '@/types/contact';
 import { buildClientHierarchy, filterClients } from '@/features/clients/helpers';
 import { getClientIdsMatchingMachineFilters } from '@/features/machines/queries';
 
-const mockClients: Client[] = [
-  {
-    id: '3f2d8635-a2d7-40ec-a4a2-25d0f4791fbb',
-    name: 'Groupe Atlantique Distribution',
-    parentClientId: null,
-    category: 'enterprise',
-    flag: 'vip',
-    address: '12 avenue des Arômes',
-    postalCode: '44000',
-    city: 'Nantes',
-    country: 'France',
-    installationDate: '2022-01-10',
-    improvementNotes: 'Prévoir extension de parc T3.',
-    internalNotes: 'Renouvellement anticipé possible.',
-    hasContract: true,
-    openOpportunities: 2,
-    openAlerts: 1,
-    createdAt: '2024-01-10T10:00:00.000Z',
-    updatedAt: '2025-10-02T10:00:00.000Z'
-  },
-  {
-    id: 'a82f9f13-f2de-47e2-b9c8-7e8f4fef5898',
-    name: 'Atlantique Distribution - Site Angers',
-    parentClientId: '3f2d8635-a2d7-40ec-a4a2-25d0f4791fbb',
-    category: 'sme',
-    flag: 'watch',
-    address: '8 rue de la Gare',
-    postalCode: '49000',
-    city: 'Angers',
-    country: 'France',
-    installationDate: '2023-03-12',
-    improvementNotes: null,
-    internalNotes: 'Site pilote paiements sans contact.',
-    hasContract: true,
-    openOpportunities: 1,
-    openAlerts: 2,
-    createdAt: '2024-02-10T10:00:00.000Z',
-    updatedAt: '2025-10-02T10:00:00.000Z'
-  },
-  {
-    id: '4f86908f-6524-4f23-b89e-631df4ac0716',
-    name: 'Mairie de Pessac',
-    parentClientId: null,
-    category: 'public',
-    flag: 'none',
-    address: 'Place de la République',
-    postalCode: '33600',
-    city: 'Pessac',
-    country: 'France',
-    installationDate: '2021-09-01',
-    improvementNotes: 'Mettre en place suivi énergétique.',
-    internalNotes: null,
-    hasContract: false,
-    openOpportunities: 0,
-    openAlerts: 0,
-    createdAt: '2024-05-01T10:00:00.000Z',
-    updatedAt: '2025-10-02T10:00:00.000Z'
+function toClientCategoryCode(value: string | null | undefined): Client['category'] {
+  const normalized = value?.trim().toLowerCase();
+  if (normalized === 'enterprise' || normalized === 'sme' || normalized === 'public' || normalized === 'franchise') {
+    return normalized;
   }
-];
+  return 'other';
+}
 
-const mockContacts: Contact[] = [
-  {
-    id: '05ea9b8f-b2ea-4f3d-af8b-88e6ca3bc081',
-    clientId: '3f2d8635-a2d7-40ec-a4a2-25d0f4791fbb',
-    firstName: 'Camille',
-    lastName: 'Roux',
-    email: 'camille.roux@example.com',
-    phone: '+33 6 01 02 03 04',
-    role: 'manager',
-    isPrimary: true,
-    createdAt: '2024-01-10T10:00:00.000Z',
-    updatedAt: '2025-10-02T10:00:00.000Z'
-  },
-  {
-    id: '4f3f6a4f-4d50-4e69-a9dd-91f6492d5e8b',
-    clientId: 'a82f9f13-f2de-47e2-b9c8-7e8f4fef5898',
-    firstName: 'Noah',
-    lastName: 'Bertrand',
-    email: 'noah.bertrand@example.com',
-    phone: '+33 6 11 12 13 14',
-    role: 'technical',
-    isPrimary: true,
-    createdAt: '2024-01-10T10:00:00.000Z',
-    updatedAt: '2025-10-02T10:00:00.000Z'
+function toClientFlagCode(value: string | null | undefined): Client['flag'] {
+  const normalized = value?.trim().toLowerCase();
+  if (normalized === 'vip' || normalized === 'risk' || normalized === 'watch') {
+    return normalized;
   }
-];
+  return 'none';
+}
+
+function toContactRole(value: string | null | undefined): Contact['role'] {
+  const normalized = value?.trim().toLowerCase();
+  if (normalized === 'manager' || normalized === 'billing' || normalized === 'technical') {
+    return normalized;
+  }
+  return 'other';
+}
 
 function mapClientRow(row: Record<string, any>): Client {
+  const contracts = Array.isArray(row.contracts) ? row.contracts : [];
+  const opportunities = Array.isArray(row.client_opportunities) ? row.client_opportunities : [];
+  const notifications = Array.isArray(row.notifications) ? row.notifications : [];
+  const category = Array.isArray(row.client_categories) ? row.client_categories[0] : row.client_categories;
+  const flag = Array.isArray(row.flag_definitions) ? row.flag_definitions[0] : row.flag_definitions;
+
   return {
     id: row.id,
     name: row.name ?? 'Client sans nom',
     parentClientId: row.parent_client_id ?? row.parentClientId ?? null,
-    category: row.category ?? 'other',
-    flag: row.flag ?? 'none',
-    address: row.address ?? '',
+    category: toClientCategoryCode(category?.name ?? row.category),
+    flag: toClientFlagCode(flag?.code ?? row.flag),
+    address: [row.address_line_1, row.address_line_2].filter(Boolean).join(', '),
     postalCode: row.postal_code ?? row.postalCode ?? '',
     city: row.city ?? '',
     country: row.country ?? '',
     installationDate: row.installation_date ?? row.installationDate ?? null,
     improvementNotes: row.improvement_notes ?? row.improvementNotes ?? null,
     internalNotes: row.internal_notes ?? row.internalNotes ?? null,
-    hasContract: Boolean(row.has_contract ?? row.hasContract ?? false),
-    openOpportunities: Number(row.open_opportunities ?? row.openOpportunities ?? 0),
-    openAlerts: Number(row.open_alerts ?? row.openAlerts ?? 0),
+    hasContract: contracts.length > 0,
+    openOpportunities: opportunities.filter((item) => item?.status !== 'won' && item?.status !== 'lost').length,
+    openAlerts: notifications.filter((item) => item?.status === 'open').length,
     createdAt: row.created_at ?? row.createdAt ?? new Date().toISOString(),
     updatedAt: row.updated_at ?? row.updatedAt ?? new Date().toISOString()
   };
@@ -116,9 +59,12 @@ function mapClientRow(row: Record<string, any>): Client {
 
 export const getClients = cache(async (filters: ClientFilterInput = {}): Promise<Client[]> => {
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.from('clients').select('*').order('name', { ascending: true });
+  const { data, error } = await supabase
+    .from('clients')
+    .select('*, contracts(id), client_opportunities(id, status), notifications(id, status), client_categories(name), flag_definitions(code)')
+    .order('name', { ascending: true });
 
-  const baseClients = error || !Array.isArray(data) ? mockClients : data.map((row) => mapClientRow(row as Record<string, any>));
+  const baseClients = error || !Array.isArray(data) ? [] : data.map((row) => mapClientRow(row as Record<string, any>));
   const basicFilteredClients = filterClients(baseClients, filters);
 
   const matchingMachineClientIds = await getClientIdsMatchingMachineFilters(filters.machineFilters ?? {});
@@ -135,7 +81,7 @@ export const getClientHierarchy = cache(async (filters: ClientFilterInput = {}):
 });
 
 export const getClientById = cache(async (id: string): Promise<ClientWithRelations | null> => {
-  const clients = await getClients({});
+  const [clients, supabase] = await Promise.all([getClients({}), createSupabaseServerClient()]);
   const current = clients.find((item) => item.id === id);
 
   if (!current) {
@@ -147,7 +93,29 @@ export const getClientById = cache(async (id: string): Promise<ClientWithRelatio
     .filter((item) => item.parentClientId === current.id)
     .map((item) => ({ id: item.id, name: item.name, city: item.city, flag: item.flag }));
 
-  const contacts = mockContacts.filter((contact) => contact.clientId === current.id);
+  const { data: contactsRows, error } = await supabase
+    .from('client_contacts')
+    .select('id, client_id, full_name, role, email, phone, is_primary, created_at')
+    .eq('client_id', current.id)
+    .order('is_primary', { ascending: false });
+
+  const contacts: Contact[] = error || !Array.isArray(contactsRows)
+    ? []
+    : contactsRows.map((row) => {
+        const [firstName, ...lastNameParts] = String(row.full_name ?? '').trim().split(/\s+/).filter(Boolean);
+        return {
+          id: row.id,
+          clientId: row.client_id,
+          firstName: firstName || 'Contact',
+          lastName: lastNameParts.join(' ') || 'Sans nom',
+          email: row.email ?? null,
+          phone: row.phone ?? null,
+          role: toContactRole(row.role),
+          isPrimary: Boolean(row.is_primary),
+          createdAt: row.created_at ?? new Date().toISOString(),
+          updatedAt: row.created_at ?? new Date().toISOString()
+        };
+      });
 
   return {
     ...current,

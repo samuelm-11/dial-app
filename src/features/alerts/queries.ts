@@ -1,7 +1,6 @@
 import { cache } from 'react';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { alertFilterSchema } from '@/features/alerts/schemas';
-import { getContractsEndingSoon } from '@/features/contracts/queries';
 import type { Alert, AlertDueBucket, AlertFilterInput, AlertStatus } from '@/types/alert';
 
 const now = () => new Date();
@@ -44,22 +43,26 @@ function filterAlerts(items: Alert[], filters: AlertFilterInput): Alert[] {
 
 function mapAlertRow(row: any): Alert {
   const client = Array.isArray(row.clients) ? row.clients[0] : row.clients;
+  const machine = Array.isArray(row.client_machines) ? row.client_machines[0] : row.client_machines;
+  const machineType = Array.isArray(machine?.machine_types) ? machine.machine_types[0] : machine?.machine_types;
   const dueDate = row.due_date ?? new Date().toISOString().slice(0, 10);
   const daysRemaining = Number(row.days_remaining ?? toDaysRemaining(dueDate));
   const dueBucket = (row.due_bucket as AlertDueBucket | null) ?? toDueBucket(daysRemaining);
+  const status = row.status === 'done' || row.status === 'dismissed' ? row.status : 'open';
+  const type = row.contract_id ? 'contract_end' : 'filter_change';
 
   return {
     id: row.id,
-    type: row.type,
-    status: (row.status ?? 'open') as AlertStatus,
+    type,
+    status: status as AlertStatus,
     title: row.title,
-    description: row.description ?? '',
+    description: row.message ?? '',
     clientId: row.client_id,
     clientName: row.client_name ?? client?.name ?? 'Client',
     clientPostalCode: row.client_postal_code ?? client?.postal_code ?? null,
-    machineId: row.machine_id ?? null,
-    machineTypeLabel: row.machine_type_label ?? null,
-    machineTypeCode: row.machine_type_code ?? null,
+    machineId: row.client_machine_id ?? null,
+    machineTypeLabel: machineType?.name ?? null,
+    machineTypeCode: null,
     contractId: row.contract_id ?? null,
     contractTitle: row.contract_title ?? null,
     dueDate,
@@ -70,77 +73,17 @@ function mapAlertRow(row: any): Alert {
   };
 }
 
-async function getFallbackAlerts(): Promise<Alert[]> {
-  const [contractsEndingSoon, supabase] = await Promise.all([getContractsEndingSoon(90), createSupabaseServerClient()]);
-
-  const todayIso = now().toISOString();
-  const contractAlerts: Alert[] = contractsEndingSoon.map((contract) => ({
-    id: `aaaaaaaa-aaaa-4aaa-8aaa-${contract.id.replace(/-/g, '').slice(0, 12)}`,
-    type: 'contract_end',
-    status: 'open',
-    title: `Contrat proche de fin: ${contract.title}`,
-    description: `Contrat ${contract.title} en fin de validité pour ${contract.clientName}.`,
-    clientId: contract.clientId,
-    clientName: contract.clientName,
-    clientPostalCode: null,
-    machineId: null,
-    machineTypeLabel: null,
-    machineTypeCode: null,
-    contractId: contract.id,
-    contractTitle: contract.title,
-    dueDate: contract.endDate,
-    daysRemaining: contract.daysRemaining,
-    dueBucket: toDueBucket(contract.daysRemaining),
-    createdAt: todayIso,
-    updatedAt: todayIso
-  }));
-
-  const { data: filterRows, error } = await supabase
-    .from('v_filters_due')
-    .select('client_id, client_name, machine_id, machine_type_label, machine_type_code, next_filter_change_date, postal_code')
-    .lte('days_remaining', 90)
-    .order('days_remaining', { ascending: true });
-
-  const filterAlerts: Alert[] = (error || !filterRows
-    ? []
-    : filterRows.map((row: any, index: number) => {
-        const daysRemaining = toDaysRemaining(row.next_filter_change_date);
-        return {
-          id: `bbbbbbbb-bbbb-4bbb-8bbb-${`${index + 1}`.padStart(12, '0')}`,
-          type: 'filter_change',
-          status: 'open',
-          title: `Filtre à changer: ${row.machine_type_label ?? 'Machine'}`,
-          description: `Intervention filtre recommandée pour ${row.client_name ?? 'client'}.`,
-          clientId: row.client_id,
-          clientName: row.client_name ?? 'Client',
-          clientPostalCode: row.postal_code ?? null,
-          machineId: row.machine_id ?? null,
-          machineTypeLabel: row.machine_type_label ?? null,
-          machineTypeCode: row.machine_type_code ?? null,
-          contractId: null,
-          contractTitle: null,
-          dueDate: row.next_filter_change_date,
-          daysRemaining,
-          dueBucket: toDueBucket(daysRemaining),
-          createdAt: todayIso,
-          updatedAt: todayIso
-        };
-      })) satisfies Alert[];
-
-  return [...contractAlerts, ...filterAlerts].sort((a, b) => a.daysRemaining - b.daysRemaining);
-}
-
 export const getAlerts = cache(async (filters: AlertFilterInput = {}): Promise<Alert[]> => {
   const parsedFilters = alertFilterSchema.safeParse(filters);
   const payload = parsedFilters.success ? parsedFilters.data : {};
   const supabase = await createSupabaseServerClient();
 
   const { data, error } = await supabase
-    .from('alerts')
-    .select('*, clients(name, postal_code)')
+    .from('notifications')
+    .select('*, clients(name, postal_code), client_machines(machine_types(name))')
     .order('due_date', { ascending: true });
 
-  const source = error || !Array.isArray(data) ? await getFallbackAlerts() : data.map(mapAlertRow);
+  const source = error || !Array.isArray(data) ? [] : data.map(mapAlertRow);
   return filterAlerts(source, payload);
 });
 
