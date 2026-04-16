@@ -42,7 +42,8 @@ const mockOpportunities: Opportunity[] = [
 
 function mapOpportunityRow(row: Record<string, any>): Opportunity {
   const client = Array.isArray(row.clients) ? row.clients[0] : row.clients;
-  const machineCategory = Array.isArray(row.machine_categories) ? row.machine_categories[0] : row.machine_categories;
+  const firstClientFlag = Array.isArray(client?.client_flags) ? client.client_flags[0] : null;
+  const flagCode = firstClientFlag?.flag_definitions?.code ?? null;
 
   return {
     id: row.id,
@@ -51,13 +52,13 @@ function mapOpportunityRow(row: Record<string, any>): Opportunity {
     title: row.title,
     description: row.description ?? null,
     linkedMachineCategoryId: row.linked_machine_category_id ?? null,
-    linkedMachineCategoryLabel: machineCategory?.label ?? null,
-    priority: row.priority,
-    status: row.status,
-    estimatedValue: row.estimated_value ?? null,
+    linkedMachineCategoryLabel: row.linked_machine_category_label ?? null,
+    priority: row.priority ?? 'medium',
+    status: row.status ?? 'open',
+    estimatedValue: row.estimated_value ?? row.amount ?? null,
     probability: row.probability ?? null,
     clientPostalCode: client?.postal_code ?? null,
-    clientFlag: client?.flag ?? null,
+    clientFlag: ['vip', 'risk', 'watch', 'none'].includes(flagCode) ? flagCode : null,
     createdAt: row.created_at,
     updatedAt: row.updated_at
   };
@@ -112,15 +113,16 @@ function filterOpportunities(opportunities: Opportunity[], filters: OpportunityF
 }
 
 export const getOpportunities = cache(async (filters: OpportunityFilterInput = {}): Promise<Opportunity[]> => {
-  const payload = opportunityFilterSchema.parse(filters);
+  const parsedFilters = opportunityFilterSchema.safeParse(filters);
+  const payload = parsedFilters.success ? parsedFilters.data : {};
   const supabase = await createSupabaseServerClient();
 
   const { data, error } = await supabase
-    .from('opportunities')
-    .select('*, clients(name, postal_code, flag), machine_categories(label)')
+    .from('client_opportunities')
+    .select('id, client_id, title, amount, status, expected_close_date, created_at, updated_at, clients(name, client_flags(flag_definitions(code)))')
     .order('updated_at', { ascending: false });
 
-  const source = error || !data ? mockOpportunities : data.map((row) => mapOpportunityRow(row as Record<string, any>));
+  const source = error || !Array.isArray(data) ? mockOpportunities : data.map((row) => mapOpportunityRow(row as Record<string, any>));
   return filterOpportunities(source, payload);
 });
 

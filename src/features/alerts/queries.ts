@@ -43,24 +43,36 @@ function filterAlerts(items: Alert[], filters: AlertFilterInput): Alert[] {
 }
 
 function mapAlertRow(row: any): Alert {
-  const dueDate = row.due_date;
+  const client = Array.isArray(row.clients) ? row.clients[0] : row.clients;
+  const contract = Array.isArray(row.contracts) ? row.contracts[0] : row.contracts;
+  const clientMachine = Array.isArray(row.client_machines) ? row.client_machines[0] : row.client_machines;
+  const machineType = Array.isArray(clientMachine?.machine_types) ? clientMachine.machine_types[0] : clientMachine?.machine_types;
+  const dueDate = row.due_date ?? new Date().toISOString().slice(0, 10);
   const daysRemaining = Number(row.days_remaining ?? toDaysRemaining(dueDate));
   const dueBucket = (row.due_bucket as AlertDueBucket | null) ?? toDueBucket(daysRemaining);
 
   return {
     id: row.id,
     type: row.type,
-    status: (row.status ?? 'open') as AlertStatus,
-    title: row.title,
-    description: row.description ?? '',
+    status: (row.status ?? (row.is_resolved ? 'done' : 'open')) as AlertStatus,
+    title:
+      row.title ??
+      (row.type === 'contract_end'
+        ? `Contrat proche de fin: ${contract?.title ?? 'Contrat'}`
+        : `Filtre à changer: ${machineType?.label ?? 'Machine'}`),
+    description:
+      row.description ??
+      (row.type === 'contract_end'
+        ? `Contrat ${contract?.title ?? 'client'} en fin de validité pour ${client?.name ?? 'client'}.`
+        : `Intervention filtre recommandée pour ${client?.name ?? 'client'}.`),
     clientId: row.client_id,
-    clientName: row.client_name ?? row.clients?.name ?? 'Client',
-    clientPostalCode: row.client_postal_code ?? row.clients?.postal_code ?? null,
-    machineId: row.machine_id ?? null,
-    machineTypeLabel: row.machine_type_label ?? null,
-    machineTypeCode: row.machine_type_code ?? null,
+    clientName: row.client_name ?? client?.name ?? 'Client',
+    clientPostalCode: row.client_postal_code ?? client?.postal_code ?? null,
+    machineId: row.machine_id ?? row.client_machine_id ?? null,
+    machineTypeLabel: row.machine_type_label ?? machineType?.label ?? null,
+    machineTypeCode: row.machine_type_code ?? machineType?.code ?? null,
     contractId: row.contract_id ?? null,
-    contractTitle: row.contract_title ?? null,
+    contractTitle: row.contract_title ?? contract?.title ?? null,
     dueDate,
     daysRemaining,
     dueBucket,
@@ -74,7 +86,7 @@ async function getFallbackAlerts(): Promise<Alert[]> {
 
   const todayIso = now().toISOString();
   const contractAlerts: Alert[] = contractsEndingSoon.map((contract) => ({
-    id: `aaaaaaaa-aaaa-4aaa-8aaa-${contract.id.replace(/-/g, '').slice(0, 12)}`,
+    id: `aaaaaaaa-aaaa-4aaa-8aaa-${String(contract.id).replace(/-/g, '').slice(0, 12).padStart(12, '0')}`,
     type: 'contract_end',
     status: 'open',
     title: `Contrat proche de fin: ${contract.title}`,
@@ -95,8 +107,8 @@ async function getFallbackAlerts(): Promise<Alert[]> {
   }));
 
   const { data: filterRows, error } = await supabase
-    .from('v_filters_due')
-    .select('client_id, client_name, machine_id, machine_type_label, machine_type_code, next_filter_change_date, postal_code')
+    .from('v_machines_filter_alerts')
+    .select('id, client_id, client_name, next_filter_change_date')
     .lte('days_remaining', 90)
     .order('days_remaining', { ascending: true });
 
@@ -108,14 +120,14 @@ async function getFallbackAlerts(): Promise<Alert[]> {
           id: `bbbbbbbb-bbbb-4bbb-8bbb-${`${index + 1}`.padStart(12, '0')}`,
           type: 'filter_change',
           status: 'open',
-          title: `Filtre à changer: ${row.machine_type_label ?? 'Machine'}`,
+          title: 'Filtre à changer: Machine',
           description: `Intervention filtre recommandée pour ${row.client_name ?? 'client'}.`,
           clientId: row.client_id,
           clientName: row.client_name ?? 'Client',
-          clientPostalCode: row.postal_code ?? null,
-          machineId: row.machine_id ?? null,
-          machineTypeLabel: row.machine_type_label ?? null,
-          machineTypeCode: row.machine_type_code ?? null,
+          clientPostalCode: null,
+          machineId: row.id ?? null,
+          machineTypeLabel: null,
+          machineTypeCode: null,
           contractId: null,
           contractTitle: null,
           dueDate: row.next_filter_change_date,
@@ -130,15 +142,16 @@ async function getFallbackAlerts(): Promise<Alert[]> {
 }
 
 export const getAlerts = cache(async (filters: AlertFilterInput = {}): Promise<Alert[]> => {
-  const payload = alertFilterSchema.parse(filters);
+  const parsedFilters = alertFilterSchema.safeParse(filters);
+  const payload = parsedFilters.success ? parsedFilters.data : {};
   const supabase = await createSupabaseServerClient();
 
   const { data, error } = await supabase
-    .from('alerts')
-    .select('*, clients(name, postal_code)')
+    .from('notifications')
+    .select('id, type, is_resolved, due_date, client_id, client_machine_id, contract_id, created_at, updated_at, clients(name), contracts(title), client_machines(id, machine_type_id, machine_types(label, code))')
     .order('due_date', { ascending: true });
 
-  const source = error || !data ? await getFallbackAlerts() : data.map(mapAlertRow);
+  const source = error || !Array.isArray(data) ? await getFallbackAlerts() : data.map(mapAlertRow);
   return filterAlerts(source, payload);
 });
 

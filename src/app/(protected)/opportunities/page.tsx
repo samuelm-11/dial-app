@@ -13,12 +13,15 @@ export default async function OpportunitiesPage({
   const resolvedSearchParams = await searchParams;
   const filters = getOpportunityFiltersFromSearchParams(resolvedSearchParams);
   const [opportunities, clients, machineCategories] = await Promise.all([getOpportunities(filters), getClientParentOptions(), getMachineCategories()]);
+  const safeOpportunities = Array.isArray(opportunities) ? opportunities : [];
+  const safeClients = Array.isArray(clients) ? clients : [];
+  const safeMachineCategories = Array.isArray(machineCategories) ? machineCategories : [];
 
   return (
     <PageContainer title="Opportunités">
       <div className="space-y-4">
-        <OpportunityFilters clients={clients} machineCategories={machineCategories.map((item) => ({ id: item.id, label: item.label }))} />
-        <OpportunityTable opportunities={opportunities} />
+        <OpportunityFilters clients={safeClients} machineCategories={safeMachineCategories.map((item) => ({ id: item.id, label: item.label }))} />
+        <OpportunityTable opportunities={safeOpportunities} />
       </div>
     </PageContainer>
   );

@@ -132,7 +132,7 @@ export async function getClientIdsMatchingMachineFilters(filters: MachineFilterI
 
   let dueSoonClientIds: Set<string> | null = null;
   if (filters.withFiltersDueSoon) {
-    const { data: dueRows, error: dueError } = await supabase.from('v_filters_due').select('client_id');
+    const { data: dueRows, error: dueError } = await supabase.from('v_machines_filter_alerts').select('client_id');
     if (!dueError && dueRows) {
       dueSoonClientIds = new Set(dueRows.map((row) => row.client_id as string));
       if (!dueSoonClientIds.size) {

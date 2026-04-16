@@ -40,10 +40,15 @@ const mockContracts: Contract[] = [
 ];
 
 function mapContractRow(row: any): Contract {
+  const client = Array.isArray(row.clients) ? row.clients[0] : row.clients;
+  const categoryCode = client?.client_categories?.code ?? null;
+  const firstClientFlag = Array.isArray(client?.client_flags) ? client.client_flags[0] : null;
+  const flagCode = firstClientFlag?.flag_definitions?.code ?? null;
+
   return {
     id: row.id,
     clientId: row.client_id,
-    clientName: row.clients?.name ?? 'Client',
+    clientName: client?.name ?? 'Client',
     title: row.title,
     startDate: row.start_date,
     endDate: row.end_date,
@@ -51,20 +56,21 @@ function mapContractRow(row: any): Contract {
     autoRenewal: Boolean(row.auto_renewal ?? false),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
-    clientPostalCode: row.clients?.postal_code ?? null,
-    clientCity: row.clients?.city ?? null,
-    clientCategory: row.clients?.category ?? null,
-    clientFlag: row.clients?.flag ?? null
+    clientPostalCode: client?.postal_code ?? null,
+    clientCity: client?.city ?? null,
+    clientCategory: ['enterprise', 'sme', 'public', 'franchise', 'other'].includes(categoryCode) ? categoryCode : null,
+    clientFlag: ['vip', 'risk', 'watch', 'none'].includes(flagCode) ? flagCode : null
   };
 }
 
 export const getContracts = cache(async (filters: ContractFilterInput = {}): Promise<Contract[]> => {
-  const payload = contractFilterSchema.parse(filters);
+  const parsedFilters = contractFilterSchema.safeParse(filters);
+  const payload = parsedFilters.success ? parsedFilters.data : {};
   const supabase = await createSupabaseServerClient();
 
   const { data, error } = await supabase
     .from('contracts')
-    .select('*, clients(name, postal_code, city, category, flag)')
+    .select('id, client_id, title, start_date, end_date, private_pdf_path, created_at, updated_at, clients(name, client_categories(code), client_flags(flag_definitions(code)))')
     .order('end_date', { ascending: true });
 
   const source = error || !data ? mockContracts : data.map(mapContractRow);
