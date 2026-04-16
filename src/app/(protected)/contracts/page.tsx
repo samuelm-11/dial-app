@@ -1,7 +1,8 @@
 import { PageContainer } from '@/components/layout/page-container';
-import { ContractFilters, getContractFiltersFromSearchParams } from '@/features/contracts/components/contract-filters';
+import { ContractFilters } from '@/features/contracts/components/contract-filters';
 import { ContractTable } from '@/features/contracts/components/contract-table';
 import { getContracts } from '@/features/contracts/queries';
+import { getContractFiltersFromSearchParams } from '@/features/contracts/search-params';
 
 export default async function ContractsPage({
   searchParams

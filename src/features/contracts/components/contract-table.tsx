@@ -8,7 +8,7 @@ import type { Contract } from '@/types/contract';
 
 export function ContractTable({ contracts }: { contracts: Contract[] }) {
   if (contracts.length === 0) {
-    return <StatePanel message="Aucun contrat trouvé avec ces filtres." variant="empty" />;
+    return <StatePanel message="Aucun contrat." variant="empty" />;
   }
 
   return (

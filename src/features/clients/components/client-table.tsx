@@ -8,7 +8,7 @@ import type { Client } from '@/types/client';
 
 export function ClientTable({ clients }: { clients: Client[] }) {
   if (clients.length === 0) {
-    return <StatePanel message="Aucun client trouvé avec ces filtres." variant="empty" />;
+    return <StatePanel message="Aucun client." variant="empty" />;
   }
 
   return (
