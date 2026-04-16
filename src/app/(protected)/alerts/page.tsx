@@ -13,15 +13,17 @@ export default async function AlertsPage({
   const filters = getAlertFiltersFromSearchParams(resolvedSearchParams);
 
   const [alerts, clients] = await Promise.all([getAlerts(filters), getClientParentOptions()]);
+  const safeAlerts = Array.isArray(alerts) ? alerts : [];
+  const safeClients = Array.isArray(clients) ? clients : [];
 
-  const urgentAlerts = alerts.filter((alert) => alert.status === 'open' && alert.dueBucket === 'urgent');
-  const upcomingAlerts = alerts.filter((alert) => alert.status === 'open' && alert.dueBucket === 'upcoming');
-  const doneAlerts = alerts.filter((alert) => alert.status !== 'open');
+  const urgentAlerts = safeAlerts.filter((alert) => alert.status === 'open' && alert.dueBucket === 'urgent');
+  const upcomingAlerts = safeAlerts.filter((alert) => alert.status === 'open' && alert.dueBucket === 'upcoming');
+  const doneAlerts = safeAlerts.filter((alert) => alert.status !== 'open');
 
   return (
     <PageContainer title="Alertes">
       <div className="space-y-4">
-        <AlertFilters clients={clients} />
+        <AlertFilters clients={safeClients} />
 
         <section className="space-y-2">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-700">Alertes urgentes</h2>

@@ -112,7 +112,8 @@ function filterOpportunities(opportunities: Opportunity[], filters: OpportunityF
 }
 
 export const getOpportunities = cache(async (filters: OpportunityFilterInput = {}): Promise<Opportunity[]> => {
-  const payload = opportunityFilterSchema.parse(filters);
+  const parsedFilters = opportunityFilterSchema.safeParse(filters);
+  const payload = parsedFilters.success ? parsedFilters.data : {};
   const supabase = await createSupabaseServerClient();
 
   const { data, error } = await supabase
@@ -120,7 +121,7 @@ export const getOpportunities = cache(async (filters: OpportunityFilterInput = {
     .select('*, clients(name, postal_code, flag), machine_categories(label)')
     .order('updated_at', { ascending: false });
 
-  const source = error || !data ? mockOpportunities : data.map((row) => mapOpportunityRow(row as Record<string, any>));
+  const source = error || !Array.isArray(data) ? mockOpportunities : data.map((row) => mapOpportunityRow(row as Record<string, any>));
   return filterOpportunities(source, payload);
 });
 

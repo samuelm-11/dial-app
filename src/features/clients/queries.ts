@@ -92,11 +92,33 @@ const mockContacts: Contact[] = [
   }
 ];
 
+function mapClientRow(row: Record<string, any>): Client {
+  return {
+    id: row.id,
+    name: row.name ?? 'Client sans nom',
+    parentClientId: row.parent_client_id ?? row.parentClientId ?? null,
+    category: row.category ?? 'other',
+    flag: row.flag ?? 'none',
+    address: row.address ?? '',
+    postalCode: row.postal_code ?? row.postalCode ?? '',
+    city: row.city ?? '',
+    country: row.country ?? '',
+    installationDate: row.installation_date ?? row.installationDate ?? null,
+    improvementNotes: row.improvement_notes ?? row.improvementNotes ?? null,
+    internalNotes: row.internal_notes ?? row.internalNotes ?? null,
+    hasContract: Boolean(row.has_contract ?? row.hasContract ?? false),
+    openOpportunities: Number(row.open_opportunities ?? row.openOpportunities ?? 0),
+    openAlerts: Number(row.open_alerts ?? row.openAlerts ?? 0),
+    createdAt: row.created_at ?? row.createdAt ?? new Date().toISOString(),
+    updatedAt: row.updated_at ?? row.updatedAt ?? new Date().toISOString()
+  };
+}
+
 export const getClients = cache(async (filters: ClientFilterInput = {}): Promise<Client[]> => {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.from('clients').select('*').order('name', { ascending: true });
 
-  const baseClients = error || !data ? mockClients : (data as Client[]);
+  const baseClients = error || !Array.isArray(data) ? mockClients : data.map((row) => mapClientRow(row as Record<string, any>));
   const basicFilteredClients = filterClients(baseClients, filters);
 
   const matchingMachineClientIds = await getClientIdsMatchingMachineFilters(filters.machineFilters ?? {});
