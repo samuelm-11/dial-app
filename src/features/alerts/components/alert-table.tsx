@@ -48,7 +48,7 @@ export function AlertTable({ alerts, title }: { alerts: Alert[]; title?: string 
   };
 
   if (!alerts.length) {
-    return <StatePanel message="Aucune alerte dans cette section." variant="empty" />;
+    return <StatePanel message="Aucune alerte." variant="empty" />;
   }
 
   return (

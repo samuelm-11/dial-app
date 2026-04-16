@@ -4,58 +4,41 @@ import { filterContracts, toContractsEndingSoon } from '@/features/contracts/hel
 import { contractFilterSchema } from '@/features/contracts/schemas';
 import type { Contract, ContractEndingSoon, ContractFilterInput } from '@/types/contract';
 
-const mockContracts: Contract[] = [
-  {
-    id: '44f1d7e0-70f8-4af9-9eb7-56f88aa08131',
-    clientId: '3f2d8635-a2d7-40ec-a4a2-25d0f4791fbb',
-    clientName: 'Groupe Atlantique Distribution',
-    title: 'Contrat maintenance premium',
-    startDate: '2025-01-01',
-    endDate: '2026-04-18',
-    privatePdfPath: 'contracts/3f2d8635-a2d7-40ec-a4a2-25d0f4791fbb/44f1d7e0-70f8.pdf',
-    autoRenewal: true,
-    createdAt: '2025-01-01T10:00:00.000Z',
-    updatedAt: '2025-11-11T10:00:00.000Z',
-    clientPostalCode: '44000',
-    clientCity: 'Nantes',
-    clientCategory: 'enterprise',
-    clientFlag: 'vip'
-  },
-  {
-    id: '6f0d2a2d-821e-467f-b03f-774f1c2f22e3',
-    clientId: 'a82f9f13-f2de-47e2-b9c8-7e8f4fef5898',
-    clientName: 'Atlantique Distribution - Site Angers',
-    title: 'Contrat site secondaire',
-    startDate: '2025-09-01',
-    endDate: '2026-06-30',
-    privatePdfPath: null,
-    autoRenewal: false,
-    createdAt: '2025-09-01T10:00:00.000Z',
-    updatedAt: '2025-11-11T10:00:00.000Z',
-    clientPostalCode: '49000',
-    clientCity: 'Angers',
-    clientCategory: 'sme',
-    clientFlag: 'watch'
+function toClientCategoryCode(value: string | null | undefined): Contract['clientCategory'] {
+  const normalized = value?.trim().toLowerCase();
+  if (normalized === 'enterprise' || normalized === 'sme' || normalized === 'public' || normalized === 'franchise') {
+    return normalized;
   }
-];
+  return null;
+}
+
+function toClientFlagCode(value: string | null | undefined): Contract['clientFlag'] {
+  const normalized = value?.trim().toLowerCase();
+  if (normalized === 'vip' || normalized === 'risk' || normalized === 'watch' || normalized === 'none') {
+    return normalized;
+  }
+  return null;
+}
 
 function mapContractRow(row: any): Contract {
   const client = Array.isArray(row.clients) ? row.clients[0] : row.clients;
+  const category = Array.isArray(client?.client_categories) ? client.client_categories[0] : client?.client_categories;
+  const flag = Array.isArray(client?.flag_definitions) ? client.flag_definitions[0] : client?.flag_definitions;
   return {
     id: row.id,
     clientId: row.client_id,
     clientName: client?.name ?? 'Client',
-    title: row.title,
+    title: row.pdf_filename ?? 'Contrat',
     startDate: row.start_date,
     endDate: row.end_date,
-    privatePdfPath: row.private_pdf_path ?? null,
-    autoRenewal: Boolean(row.auto_renewal ?? false),
+    privatePdfPath: row.pdf_path ?? null,
+    autoRenewal: Boolean(row.auto_renew ?? false),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     clientPostalCode: client?.postal_code ?? null,
     clientCity: client?.city ?? null,
-    clientCategory: client?.category ?? null,
-    clientFlag: client?.flag ?? null
+    clientCategory: toClientCategoryCode(category?.name),
+    clientFlag: toClientFlagCode(flag?.code)
   };
 }
 
@@ -66,10 +49,10 @@ export const getContracts = cache(async (filters: ContractFilterInput = {}): Pro
 
   const { data, error } = await supabase
     .from('contracts')
-    .select('*, clients(name, postal_code, city, category, flag)')
+    .select('*, clients(name, postal_code, city, client_categories(name), flag_definitions(code))')
     .order('end_date', { ascending: true });
 
-  const source = error || !data ? mockContracts : data.map(mapContractRow);
+  const source = error || !Array.isArray(data) ? [] : data.map(mapContractRow);
   return filterContracts(source, payload);
 });
 
@@ -79,24 +62,6 @@ export const getClientContracts = cache(async (clientId: string): Promise<Contra
 });
 
 export const getContractsEndingSoon = cache(async (days: 30 | 90 | 180 = 90): Promise<ContractEndingSoon[]> => {
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from('v_contracts_ending_soon')
-    .select('id, client_id, client_name, title, end_date, days_remaining')
-    .lte('days_remaining', days)
-    .order('days_remaining', { ascending: true });
-
-  if (!error && data) {
-    return data.map((row: any) => ({
-      id: row.id,
-      clientId: row.client_id,
-      clientName: row.client_name,
-      title: row.title,
-      endDate: row.end_date,
-      daysRemaining: Number(row.days_remaining)
-    }));
-  }
-
   const contracts = await getContracts({ endingInDays: days });
   return toContractsEndingSoon(contracts);
 });

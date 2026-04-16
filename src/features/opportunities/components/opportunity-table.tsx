@@ -21,7 +21,7 @@ export function OpportunityTable({ opportunities, showClient = true }: { opportu
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   if (opportunities.length === 0) {
-    return <StatePanel message="Aucune opportunité ne correspond aux critères." variant="empty" />;
+    return <StatePanel message="Aucune opportunité." variant="empty" />;
   }
 
   return (
