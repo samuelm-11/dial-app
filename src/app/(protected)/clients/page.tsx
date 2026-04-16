@@ -1,10 +1,11 @@
 import Link from 'next/link';
 import { PageContainer } from '@/components/layout/page-container';
 import { Button } from '@/components/ui/button';
-import { ClientFilters, getFiltersFromSearchParams } from '@/features/clients/components/client-filters';
+import { ClientFilters } from '@/features/clients/components/client-filters';
 import { ClientTable } from '@/features/clients/components/client-table';
 import { ClientTreeView } from '@/features/clients/components/client-tree-view';
 import { getClientHierarchy, getClients } from '@/features/clients/queries';
+import { getFiltersFromSearchParams } from '@/features/clients/search-params';
 import { getMachineCategories, getMachineTypes } from '@/features/machines/queries';
 
 export default async function ClientsPage({
