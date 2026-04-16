@@ -18,7 +18,7 @@ export default async function OpportunitiesPage({
   const safeMachineCategories = Array.isArray(machineCategories) ? machineCategories : [];
 
   return (
-    <PageContainer title="Opportunités">
+    <PageContainer title="Prospection">
       <div className="space-y-4">
         <OpportunityFilters clients={safeClients} machineCategories={safeMachineCategories.map((item) => ({ id: item.id, label: item.label }))} />
         <OpportunityTable opportunities={safeOpportunities} />

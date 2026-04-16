@@ -21,7 +21,7 @@ export function OpportunityTable({ opportunities, showClient = true }: { opportu
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   if (opportunities.length === 0) {
-    return <StatePanel message="Aucune opportunité ne correspond aux critères." variant="empty" />;
+    return <StatePanel message="Aucune prospection ne correspond aux critères." variant="empty" />;
   }
 
   return (
@@ -96,7 +96,7 @@ export function OpportunityTable({ opportunities, showClient = true }: { opportu
                         try {
                           await deleteOpportunity(opportunity.clientId, opportunity.id);
                         } catch {
-                          setErrorMessage('La suppression de l’opportunité a échoué.');
+                          setErrorMessage('La suppression de la prospection a échoué.');
                         }
                       });
                     }}

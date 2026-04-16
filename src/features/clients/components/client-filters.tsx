@@ -124,7 +124,7 @@ export function ClientFilters({
             defaultChecked={searchParams.get('hasOpenOpportunities') === '1'}
             onChange={(event) => setBoolean('hasOpenOpportunities', event.target.checked)}
           />
-          Opportunités ouvertes
+          Prospections ouvertes
         </label>
         <label className="flex items-center gap-2 text-sm text-slate-700">
           <input
