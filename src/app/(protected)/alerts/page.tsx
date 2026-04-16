@@ -1,7 +1,8 @@
 import { PageContainer } from '@/components/layout/page-container';
-import { AlertFilters, getAlertFiltersFromSearchParams } from '@/features/alerts/components/alert-filters';
+import { AlertFilters } from '@/features/alerts/components/alert-filters';
 import { AlertTable } from '@/features/alerts/components/alert-table';
 import { getAlerts } from '@/features/alerts/queries';
+import { getAlertFiltersFromSearchParams } from '@/features/alerts/search-params';
 import { getClientParentOptions } from '@/features/clients/queries';
 
 export default async function AlertsPage({

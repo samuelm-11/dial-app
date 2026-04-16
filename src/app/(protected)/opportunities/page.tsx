@@ -1,9 +1,10 @@
 import { PageContainer } from '@/components/layout/page-container';
 import { getClientParentOptions } from '@/features/clients/queries';
 import { getMachineCategories } from '@/features/machines/queries';
-import { OpportunityFilters, getOpportunityFiltersFromSearchParams } from '@/features/opportunities/components/opportunity-filters';
+import { OpportunityFilters } from '@/features/opportunities/components/opportunity-filters';
 import { OpportunityTable } from '@/features/opportunities/components/opportunity-table';
 import { getOpportunities } from '@/features/opportunities/queries';
+import { getOpportunityFiltersFromSearchParams } from '@/features/opportunities/search-params';
 
 export default async function OpportunitiesPage({
   searchParams
