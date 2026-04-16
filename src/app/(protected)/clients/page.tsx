@@ -22,6 +22,10 @@ export default async function ClientsPage({
     getMachineCategories(),
     getMachineTypes()
   ]);
+  const safeClients = Array.isArray(clients) ? clients : [];
+  const safeHierarchy = Array.isArray(hierarchy) ? hierarchy : [];
+  const safeMachineCategories = Array.isArray(machineCategories) ? machineCategories : [];
+  const safeMachineTypes = Array.isArray(machineTypes) ? machineTypes : [];
 
   return (
     <PageContainer title="Clients">
@@ -56,8 +60,8 @@ export default async function ClientsPage({
           </div>
         </div>
 
-        <ClientFilters machineCategories={machineCategories} machineTypes={machineTypes} />
-        {view === 'tree' ? <ClientTreeView nodes={hierarchy} /> : <ClientTable clients={clients} />}
+        <ClientFilters machineCategories={safeMachineCategories} machineTypes={safeMachineTypes} />
+        {view === 'tree' ? <ClientTreeView nodes={safeHierarchy} /> : <ClientTable clients={safeClients} />}
       </div>
     </PageContainer>
   );

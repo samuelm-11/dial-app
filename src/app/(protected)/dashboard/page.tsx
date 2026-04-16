@@ -13,8 +13,12 @@ export default async function DashboardPage() {
     getContractsEndingSoon(90),
     getClients({ flags: ['risk'] })
   ]);
+  const safeAllOpenAlerts = Array.isArray(allOpenAlerts) ? allOpenAlerts : [];
+  const safeUrgentAlerts = Array.isArray(urgentAlerts) ? urgentAlerts : [];
+  const safeContractsEndingSoon = Array.isArray(contractsEndingSoon) ? contractsEndingSoon : [];
+  const safeRedFlagClients = Array.isArray(redFlagClients) ? redFlagClients : [];
 
-  const filterDueSoon = allOpenAlerts.filter(
+  const filterDueSoon = safeAllOpenAlerts.filter(
     (alert) => alert.type === 'filter_change' && (alert.dueBucket === 'urgent' || alert.dueBucket === 'upcoming')
   );
 
@@ -30,19 +34,19 @@ export default async function DashboardPage() {
 
           <Card>
             <p className="text-xs uppercase tracking-wide text-slate-500">Alertes ouvertes</p>
-            <p className="mt-2 text-3xl font-semibold text-primary">{allOpenAlerts.length}</p>
+            <p className="mt-2 text-3xl font-semibold text-primary">{safeAllOpenAlerts.length}</p>
             <p className="mt-1 text-xs text-slate-500">Contrats + maintenance filtres.</p>
           </Card>
 
           <Card>
             <p className="text-xs uppercase tracking-wide text-slate-500">Clients flag rouge</p>
-            <p className="mt-2 text-3xl font-semibold text-danger">{redFlagClients.length}</p>
+            <p className="mt-2 text-3xl font-semibold text-danger">{safeRedFlagClients.length}</p>
             <p className="mt-1 text-xs text-slate-500">Clients avec niveau risque élevé.</p>
           </Card>
 
           <Card>
             <p className="text-xs uppercase tracking-wide text-slate-500">Contrats proches de fin</p>
-            <p className="mt-2 text-3xl font-semibold text-secondary">{contractsEndingSoon.length}</p>
+            <p className="mt-2 text-3xl font-semibold text-secondary">{safeContractsEndingSoon.length}</p>
             <p className="mt-1 text-xs text-slate-500">Échéance à 90 jours.</p>
           </Card>
         </div>
@@ -53,13 +57,13 @@ export default async function DashboardPage() {
               <CardTitle>Alertes urgentes</CardTitle>
               <CardDescription>Priorité de traitement sur les 8 prochaines interventions.</CardDescription>
             </div>
-            <Badge tone="danger" label={`${urgentAlerts.length} urgentes`} />
+            <Badge tone="danger" label={`${safeUrgentAlerts.length} urgentes`} />
           </CardHeader>
-          {urgentAlerts.length === 0 ? (
+          {safeUrgentAlerts.length === 0 ? (
             <p className="text-sm text-slate-500">Aucune alerte urgente.</p>
           ) : (
             <ul className="space-y-2.5 text-sm text-slate-700">
-              {urgentAlerts.slice(0, 8).map((alert) => (
+              {safeUrgentAlerts.slice(0, 8).map((alert) => (
                 <li key={alert.id} className="rounded-lg border border-muted px-3 py-2">
                   <Link href={`/clients/${alert.clientId}`} className="font-medium text-primary hover:underline">
                     {alert.clientName}
@@ -77,13 +81,13 @@ export default async function DashboardPage() {
               <CardTitle>Contrats proches de fin</CardTitle>
               <CardDescription>Clients à recontacter avant échéance contractuelle.</CardDescription>
             </div>
-            <Badge tone="warning" label={`${contractsEndingSoon.length} à suivre`} />
+            <Badge tone="warning" label={`${safeContractsEndingSoon.length} à suivre`} />
           </CardHeader>
-          {contractsEndingSoon.length === 0 ? (
+          {safeContractsEndingSoon.length === 0 ? (
             <p className="text-sm text-slate-500">Aucun contrat proche de fin.</p>
           ) : (
             <ul className="space-y-2.5 text-sm text-slate-700">
-              {contractsEndingSoon.slice(0, 8).map((contract) => (
+              {safeContractsEndingSoon.slice(0, 8).map((contract) => (
                 <li key={contract.id} className="rounded-lg border border-muted px-3 py-2">
                   <Link href={`/clients/${contract.clientId}`} className="font-medium text-primary hover:underline">
                     {contract.clientName}

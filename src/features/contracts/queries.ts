@@ -4,46 +4,16 @@ import { filterContracts, toContractsEndingSoon } from '@/features/contracts/hel
 import { contractFilterSchema } from '@/features/contracts/schemas';
 import type { Contract, ContractEndingSoon, ContractFilterInput } from '@/types/contract';
 
-const mockContracts: Contract[] = [
-  {
-    id: '44f1d7e0-70f8-4af9-9eb7-56f88aa08131',
-    clientId: '3f2d8635-a2d7-40ec-a4a2-25d0f4791fbb',
-    clientName: 'Groupe Atlantique Distribution',
-    title: 'Contrat maintenance premium',
-    startDate: '2025-01-01',
-    endDate: '2026-04-18',
-    privatePdfPath: 'contracts/3f2d8635-a2d7-40ec-a4a2-25d0f4791fbb/44f1d7e0-70f8.pdf',
-    autoRenewal: true,
-    createdAt: '2025-01-01T10:00:00.000Z',
-    updatedAt: '2025-11-11T10:00:00.000Z',
-    clientPostalCode: '44000',
-    clientCity: 'Nantes',
-    clientCategory: 'enterprise',
-    clientFlag: 'vip'
-  },
-  {
-    id: '6f0d2a2d-821e-467f-b03f-774f1c2f22e3',
-    clientId: 'a82f9f13-f2de-47e2-b9c8-7e8f4fef5898',
-    clientName: 'Atlantique Distribution - Site Angers',
-    title: 'Contrat site secondaire',
-    startDate: '2025-09-01',
-    endDate: '2026-06-30',
-    privatePdfPath: null,
-    autoRenewal: false,
-    createdAt: '2025-09-01T10:00:00.000Z',
-    updatedAt: '2025-11-11T10:00:00.000Z',
-    clientPostalCode: '49000',
-    clientCity: 'Angers',
-    clientCategory: 'sme',
-    clientFlag: 'watch'
-  }
-];
-
 function mapContractRow(row: any): Contract {
+  const client = Array.isArray(row.clients) ? row.clients[0] : row.clients;
+  const categoryCode = client?.client_categories?.code ?? null;
+  const firstClientFlag = Array.isArray(client?.client_flags) ? client.client_flags[0] : null;
+  const flagCode = firstClientFlag?.flag_definitions?.code ?? null;
+
   return {
     id: row.id,
     clientId: row.client_id,
-    clientName: row.clients?.name ?? 'Client',
+    clientName: client?.name ?? 'Client',
     title: row.title,
     startDate: row.start_date,
     endDate: row.end_date,
@@ -51,23 +21,24 @@ function mapContractRow(row: any): Contract {
     autoRenewal: Boolean(row.auto_renewal ?? false),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
-    clientPostalCode: row.clients?.postal_code ?? null,
-    clientCity: row.clients?.city ?? null,
-    clientCategory: row.clients?.category ?? null,
-    clientFlag: row.clients?.flag ?? null
+    clientPostalCode: client?.postal_code ?? null,
+    clientCity: client?.city ?? null,
+    clientCategory: ['enterprise', 'sme', 'public', 'franchise', 'other'].includes(categoryCode) ? categoryCode : null,
+    clientFlag: ['vip', 'risk', 'watch', 'none'].includes(flagCode) ? flagCode : null
   };
 }
 
 export const getContracts = cache(async (filters: ContractFilterInput = {}): Promise<Contract[]> => {
-  const payload = contractFilterSchema.parse(filters);
+  const parsedFilters = contractFilterSchema.safeParse(filters);
+  const payload = parsedFilters.success ? parsedFilters.data : {};
   const supabase = await createSupabaseServerClient();
 
   const { data, error } = await supabase
     .from('contracts')
-    .select('*, clients(name, postal_code, city, category, flag)')
+    .select('id, client_id, title, start_date, end_date, private_pdf_path, created_at, updated_at, clients(name, client_categories(code), client_flags(flag_definitions(code)))')
     .order('end_date', { ascending: true });
 
-  const source = error || !data ? mockContracts : data.map(mapContractRow);
+  const source = error || !Array.isArray(data) ? [] : data.map(mapContractRow);
   return filterContracts(source, payload);
 });
 

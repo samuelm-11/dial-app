@@ -11,12 +11,13 @@ export default async function ContractsPage({
   const resolvedSearchParams = await searchParams;
   const filters = getContractFiltersFromSearchParams(resolvedSearchParams);
   const contracts = await getContracts(filters);
+  const safeContracts = Array.isArray(contracts) ? contracts : [];
 
   return (
     <PageContainer title="Contrats">
       <div className="space-y-4">
         <ContractFilters />
-        <ContractTable contracts={contracts} />
+        <ContractTable contracts={safeContracts} />
       </div>
     </PageContainer>
   );

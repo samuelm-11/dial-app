@@ -50,15 +50,15 @@ export function buildClientHierarchy(clients: Client[]): ClientHierarchyNode[] {
 
 export function filterClients(clients: Client[], filters: ClientFilterInput): Client[] {
   return clients.filter((client) => {
-    if (filters.name && !client.name.toLowerCase().includes(filters.name.toLowerCase())) {
+    if (filters.name && !(client.name ?? '').toLowerCase().includes(filters.name.toLowerCase())) {
       return false;
     }
 
-    if (filters.postalCode && !client.postalCode.includes(filters.postalCode)) {
+    if (filters.postalCode && !(client.postalCode ?? '').includes(filters.postalCode)) {
       return false;
     }
 
-    if (filters.city && !client.city.toLowerCase().includes(filters.city.toLowerCase())) {
+    if (filters.city && !(client.city ?? '').toLowerCase().includes(filters.city.toLowerCase())) {
       return false;
     }
 
