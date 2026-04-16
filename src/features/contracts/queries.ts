@@ -40,10 +40,11 @@ const mockContracts: Contract[] = [
 ];
 
 function mapContractRow(row: any): Contract {
+  const client = Array.isArray(row.clients) ? row.clients[0] : row.clients;
   return {
     id: row.id,
     clientId: row.client_id,
-    clientName: row.clients?.name ?? 'Client',
+    clientName: client?.name ?? 'Client',
     title: row.title,
     startDate: row.start_date,
     endDate: row.end_date,
@@ -51,15 +52,16 @@ function mapContractRow(row: any): Contract {
     autoRenewal: Boolean(row.auto_renewal ?? false),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
-    clientPostalCode: row.clients?.postal_code ?? null,
-    clientCity: row.clients?.city ?? null,
-    clientCategory: row.clients?.category ?? null,
-    clientFlag: row.clients?.flag ?? null
+    clientPostalCode: client?.postal_code ?? null,
+    clientCity: client?.city ?? null,
+    clientCategory: client?.category ?? null,
+    clientFlag: client?.flag ?? null
   };
 }
 
 export const getContracts = cache(async (filters: ContractFilterInput = {}): Promise<Contract[]> => {
-  const payload = contractFilterSchema.parse(filters);
+  const parsedFilters = contractFilterSchema.safeParse(filters);
+  const payload = parsedFilters.success ? parsedFilters.data : {};
   const supabase = await createSupabaseServerClient();
 
   const { data, error } = await supabase

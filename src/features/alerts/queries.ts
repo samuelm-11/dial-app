@@ -43,7 +43,8 @@ function filterAlerts(items: Alert[], filters: AlertFilterInput): Alert[] {
 }
 
 function mapAlertRow(row: any): Alert {
-  const dueDate = row.due_date;
+  const client = Array.isArray(row.clients) ? row.clients[0] : row.clients;
+  const dueDate = row.due_date ?? new Date().toISOString().slice(0, 10);
   const daysRemaining = Number(row.days_remaining ?? toDaysRemaining(dueDate));
   const dueBucket = (row.due_bucket as AlertDueBucket | null) ?? toDueBucket(daysRemaining);
 
@@ -54,8 +55,8 @@ function mapAlertRow(row: any): Alert {
     title: row.title,
     description: row.description ?? '',
     clientId: row.client_id,
-    clientName: row.client_name ?? row.clients?.name ?? 'Client',
-    clientPostalCode: row.client_postal_code ?? row.clients?.postal_code ?? null,
+    clientName: row.client_name ?? client?.name ?? 'Client',
+    clientPostalCode: row.client_postal_code ?? client?.postal_code ?? null,
     machineId: row.machine_id ?? null,
     machineTypeLabel: row.machine_type_label ?? null,
     machineTypeCode: row.machine_type_code ?? null,
@@ -130,7 +131,8 @@ async function getFallbackAlerts(): Promise<Alert[]> {
 }
 
 export const getAlerts = cache(async (filters: AlertFilterInput = {}): Promise<Alert[]> => {
-  const payload = alertFilterSchema.parse(filters);
+  const parsedFilters = alertFilterSchema.safeParse(filters);
+  const payload = parsedFilters.success ? parsedFilters.data : {};
   const supabase = await createSupabaseServerClient();
 
   const { data, error } = await supabase
@@ -138,7 +140,7 @@ export const getAlerts = cache(async (filters: AlertFilterInput = {}): Promise<A
     .select('*, clients(name, postal_code)')
     .order('due_date', { ascending: true });
 
-  const source = error || !data ? await getFallbackAlerts() : data.map(mapAlertRow);
+  const source = error || !Array.isArray(data) ? await getFallbackAlerts() : data.map(mapAlertRow);
   return filterAlerts(source, payload);
 });
 
