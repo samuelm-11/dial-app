@@ -46,7 +46,10 @@ function mapAlertRow(row: any): Alert {
   const client = Array.isArray(row.clients) ? row.clients[0] : row.clients;
   const contract = Array.isArray(row.contracts) ? row.contracts[0] : row.contracts;
   const clientMachine = Array.isArray(row.client_machines) ? row.client_machines[0] : row.client_machines;
-  const machineType = Array.isArray(clientMachine?.machine_types) ? clientMachine.machine_types[0] : clientMachine?.machine_types;
+  const machineType = Array.isArray(clientMachine?.machine_types)
+    ? clientMachine.machine_types[0]
+    : clientMachine?.machine_types;
+
   const dueDate = row.due_date ?? new Date().toISOString().slice(0, 10);
   const daysRemaining = Number(row.days_remaining ?? toDaysRemaining(dueDate));
   const dueBucket = (row.due_bucket as AlertDueBucket | null) ?? toDueBucket(daysRemaining);
@@ -82,9 +85,13 @@ function mapAlertRow(row: any): Alert {
 }
 
 async function getFallbackAlerts(): Promise<Alert[]> {
-  const [contractsEndingSoon, supabase] = await Promise.all([getContractsEndingSoon(90), createSupabaseServerClient()]);
+  const [contractsEndingSoon, supabase] = await Promise.all([
+    getContractsEndingSoon(90),
+    createSupabaseServerClient()
+  ]);
 
   const todayIso = now().toISOString();
+
   const contractAlerts: Alert[] = contractsEndingSoon.map((contract) => ({
     id: `aaaaaaaa-aaaa-4aaa-8aaa-${String(contract.id).replace(/-/g, '').slice(0, 12).padStart(12, '0')}`,
     type: 'contract_end',
@@ -116,6 +123,7 @@ async function getFallbackAlerts(): Promise<Alert[]> {
     ? []
     : filterRows.map((row: any, index: number) => {
         const daysRemaining = toDaysRemaining(row.next_filter_change_date);
+
         return {
           id: `bbbbbbbb-bbbb-4bbb-8bbb-${`${index + 1}`.padStart(12, '0')}`,
           type: 'filter_change',
@@ -148,7 +156,9 @@ export const getAlerts = cache(async (filters: AlertFilterInput = {}): Promise<A
 
   const { data, error } = await supabase
     .from('notifications')
-    .select('id, type, is_resolved, due_date, client_id, client_machine_id, contract_id, created_at, updated_at, clients(name), contracts(title), client_machines(id, machine_type_id, machine_types(label, code))')
+    .select(
+      'id, type, is_resolved, due_date, client_id, client_machine_id, contract_id, created_at, updated_at, clients(name, postal_code), contracts(title), client_machines(id, machine_type_id, machine_types(label, code))'
+    )
     .order('due_date', { ascending: true });
 
   const source = error || !Array.isArray(data) ? await getFallbackAlerts() : data.map(mapAlertRow);

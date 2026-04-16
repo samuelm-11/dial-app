@@ -120,16 +120,21 @@ function mapClientRow(row: Record<string, any>): Client {
 
 export const getClients = cache(async (filters: ClientFilterInput = {}): Promise<Client[]> => {
   const supabase = await createSupabaseServerClient();
-  const [{ data: clientsData, error: clientsError }, { data: contractsData, error: contractsError }, { data: opportunitiesData, error: opportunitiesError }, { data: notificationsData, error: notificationsError }] =
-    await Promise.all([
-      supabase
-        .from('clients')
-        .select('id, name, parent_client_id, created_at, updated_at, client_categories(code), client_flags(flag_definitions(code))')
-        .order('name', { ascending: true }),
-      supabase.from('contracts').select('client_id'),
-      supabase.from('client_opportunities').select('client_id, status'),
-      supabase.from('notifications').select('client_id, is_resolved')
-    ]);
+
+  const [
+    { data: clientsData, error: clientsError },
+    { data: contractsData, error: contractsError },
+    { data: opportunitiesData, error: opportunitiesError },
+    { data: notificationsData, error: notificationsError }
+  ] = await Promise.all([
+    supabase
+      .from('clients')
+      .select('id, name, parent_client_id, created_at, updated_at, client_categories(code), client_flags(flag_definitions(code))')
+      .order('name', { ascending: true }),
+    supabase.from('contracts').select('client_id'),
+    supabase.from('client_opportunities').select('client_id, status'),
+    supabase.from('notifications').select('client_id, is_resolved')
+  ]);
 
   const contractsByClient = new Map<string, number>();
   if (!contractsError && Array.isArray(contractsData)) {
@@ -171,6 +176,7 @@ export const getClients = cache(async (filters: ClientFilterInput = {}): Promise
             open_alerts: alertsByClient.get(row.id) ?? 0
           } as Record<string, any>)
         );
+
   const basicFilteredClients = filterClients(baseClients, filters);
 
   const matchingMachineClientIds = await getClientIdsMatchingMachineFilters(filters.machineFilters ?? {});

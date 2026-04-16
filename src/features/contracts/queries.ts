@@ -70,10 +70,27 @@ export const getContracts = cache(async (filters: ContractFilterInput = {}): Pro
 
   const { data, error } = await supabase
     .from('contracts')
-    .select('id, client_id, title, start_date, end_date, private_pdf_path, created_at, updated_at, clients(name, client_categories(code), client_flags(flag_definitions(code)))')
+    .select(`
+      id,
+      client_id,
+      title,
+      start_date,
+      end_date,
+      private_pdf_path,
+      auto_renewal,
+      created_at,
+      updated_at,
+      clients(
+        name,
+        postal_code,
+        city,
+        client_categories(code),
+        client_flags(flag_definitions(code))
+      )
+    `)
     .order('end_date', { ascending: true });
 
-  const source = error || !data ? mockContracts : data.map(mapContractRow);
+  const source = error || !Array.isArray(data) ? mockContracts : data.map(mapContractRow);
   return filterContracts(source, payload);
 });
 
@@ -84,13 +101,14 @@ export const getClientContracts = cache(async (clientId: string): Promise<Contra
 
 export const getContractsEndingSoon = cache(async (days: 30 | 90 | 180 = 90): Promise<ContractEndingSoon[]> => {
   const supabase = await createSupabaseServerClient();
+
   const { data, error } = await supabase
     .from('v_contracts_ending_soon')
     .select('id, client_id, client_name, title, end_date, days_remaining')
     .lte('days_remaining', days)
     .order('days_remaining', { ascending: true });
 
-  if (!error && data) {
+  if (!error && Array.isArray(data)) {
     return data.map((row: any) => ({
       id: row.id,
       clientId: row.client_id,
