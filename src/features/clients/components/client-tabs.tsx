@@ -14,7 +14,7 @@ import type { Contract } from '@/types/contract';
 import type { Opportunity } from '@/types/opportunity';
 import type { Alert } from '@/types/alert';
 
-const tabs = ['Vue d’ensemble', 'Contacts', 'Parc machines', 'Contrats', 'Opportunités', 'Alertes', 'Notes'] as const;
+const tabs = ['Vue d’ensemble', 'Contacts', 'Parc machines', 'Contrats', 'Prospection', 'Alertes', 'Notes'] as const;
 type Tab = (typeof tabs)[number];
 
 export function ClientTabs({
@@ -56,7 +56,7 @@ export function ClientTabs({
         <ClientMachinesTab clientId={client.id} initialMachines={clientMachines} machineTypes={machineTypes} />
       ) : null}
       {activeTab === 'Contrats' ? <ClientContractsTab clientId={client.id} contracts={contracts} /> : null}
-      {activeTab === 'Opportunités' ? (
+      {activeTab === 'Prospection' ? (
         <ClientOpportunitiesTab clientId={client.id} opportunities={opportunities} machineCategoryOptions={machineCategoryOptions} />
       ) : null}
       {activeTab === 'Alertes' ? <ClientAlertsTab alerts={alerts} /> : null}

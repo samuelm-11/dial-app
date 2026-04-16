@@ -19,9 +19,9 @@ export function ClientOpportunitiesTab({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-slate-900">Opportunités client</h3>
+        <h3 className="text-sm font-semibold text-slate-900">Prospection client</h3>
         <button className="rounded bg-slate-900 px-3 py-2 text-xs font-medium text-white" onClick={() => setShowCreateForm((current) => !current)}>
-          {showCreateForm ? 'Masquer le formulaire' : 'Créer une opportunité'}
+          {showCreateForm ? 'Masquer le formulaire' : 'Créer une prospection'}
         </button>
       </div>
 

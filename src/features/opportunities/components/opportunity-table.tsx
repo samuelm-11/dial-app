@@ -16,12 +16,18 @@ const priorityLabels: Record<Opportunity['priority'], string> = {
   high: 'Haute'
 };
 
-export function OpportunityTable({ opportunities, showClient = true }: { opportunities: Opportunity[]; showClient?: boolean }) {
+export function OpportunityTable({
+  opportunities,
+  showClient = true
+}: {
+  opportunities: Opportunity[];
+  showClient?: boolean;
+}) {
   const [isPending, startTransition] = useTransition();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   if (opportunities.length === 0) {
-    return <StatePanel message="Aucune opportunité." variant="empty" />;
+    return <StatePanel message="Aucune prospection ne correspond aux critères." variant="empty" />;
   }
 
   return (
@@ -53,15 +59,27 @@ export function OpportunityTable({ opportunities, showClient = true }: { opportu
                 ) : null}
                 <td className="px-3 py-2 text-slate-800">
                   <p className="font-medium">{opportunity.title}</p>
-                  {opportunity.description ? <p className="mt-1 max-w-sm text-xs text-slate-600">{opportunity.description}</p> : null}
+                  {opportunity.description ? (
+                    <p className="mt-1 max-w-sm text-xs text-slate-600">{opportunity.description}</p>
+                  ) : null}
                 </td>
-                <td className="whitespace-nowrap px-3 py-2 text-slate-700">{opportunity.linkedMachineCategoryLabel ?? '—'}</td>
-                <td className="whitespace-nowrap px-3 py-2 text-slate-700">{priorityLabels[opportunity.priority]}</td>
+                <td className="whitespace-nowrap px-3 py-2 text-slate-700">
+                  {opportunity.linkedMachineCategoryLabel ?? '—'}
+                </td>
+                <td className="whitespace-nowrap px-3 py-2 text-slate-700">
+                  {priorityLabels[opportunity.priority]}
+                </td>
                 <td className="whitespace-nowrap px-3 py-2">
                   <OpportunityStatusBadge status={opportunity.status} />
                 </td>
-                <td className="whitespace-nowrap px-3 py-2 text-slate-700">{opportunity.estimatedValue ? `${Math.round(opportunity.estimatedValue).toLocaleString('fr-FR')} €` : '—'}</td>
-                <td className="whitespace-nowrap px-3 py-2 text-slate-700">{opportunity.probability !== null ? `${opportunity.probability}%` : '—'}</td>
+                <td className="whitespace-nowrap px-3 py-2 text-slate-700">
+                  {opportunity.estimatedValue
+                    ? `${Math.round(opportunity.estimatedValue).toLocaleString('fr-FR')} €`
+                    : '—'}
+                </td>
+                <td className="whitespace-nowrap px-3 py-2 text-slate-700">
+                  {opportunity.probability !== null ? `${opportunity.probability}%` : '—'}
+                </td>
                 <td className="space-y-2 px-3 py-2">
                   <select
                     className="w-full rounded border border-slate-300 px-2 py-1 text-xs"
@@ -71,7 +89,11 @@ export function OpportunityTable({ opportunities, showClient = true }: { opportu
                       setErrorMessage(null);
                       startTransition(async () => {
                         try {
-                          await updateOpportunityStatus(opportunity.clientId, opportunity.id, event.target.value as Opportunity['status']);
+                          await updateOpportunityStatus(
+                            opportunity.clientId,
+                            opportunity.id,
+                            event.target.value as Opportunity['status']
+                          );
                         } catch {
                           setErrorMessage('La mise à jour du statut a échoué. Réessayez.');
                         }
@@ -96,7 +118,7 @@ export function OpportunityTable({ opportunities, showClient = true }: { opportu
                         try {
                           await deleteOpportunity(opportunity.clientId, opportunity.id);
                         } catch {
-                          setErrorMessage('La suppression de l’opportunité a échoué.');
+                          setErrorMessage('La suppression de la prospection a échoué.');
                         }
                       });
                     }}

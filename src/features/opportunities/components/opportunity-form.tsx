@@ -75,7 +75,7 @@ export function OpportunityForm({
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 rounded border border-slate-200 bg-slate-50 p-4">
       <div className="grid gap-3 md:grid-cols-2">
-        <input className="rounded border border-slate-300 px-3 py-2 text-sm md:col-span-2" placeholder="Titre de l'opportunité" {...register('title')} />
+        <input className="rounded border border-slate-300 px-3 py-2 text-sm md:col-span-2" placeholder="Titre de la prospection" {...register('title')} />
         <textarea className="rounded border border-slate-300 px-3 py-2 text-sm md:col-span-2" rows={3} placeholder="Description" {...register('description')} />
 
         <select className="w-full rounded border border-slate-300 px-3 py-2 text-sm" {...register('linkedMachineCategoryId')}>
@@ -122,10 +122,10 @@ export function OpportunityForm({
         />
       </div>
 
-      {Object.keys(errors).length > 0 ? <p className="text-xs text-rose-600">Merci de corriger les champs opportunité.</p> : null}
+      {Object.keys(errors).length > 0 ? <p className="text-xs text-rose-600">Merci de corriger les champs de prospection.</p> : null}
 
       <button className="w-full rounded bg-slate-900 px-3 py-2 text-sm text-white disabled:opacity-60 sm:w-auto" disabled={isPending}>
-        {isPending ? 'Enregistrement...' : opportunity ? "Mettre à jour l'opportunité" : 'Créer une opportunité'}
+        {isPending ? 'Enregistrement...' : opportunity ? "Mettre à jour la prospection" : 'Créer une prospection'}
       </button>
     </form>
   );

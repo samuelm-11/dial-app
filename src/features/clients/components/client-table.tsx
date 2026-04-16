@@ -21,7 +21,7 @@ export function ClientTable({ clients }: { clients: Client[] }) {
             <th className="whitespace-nowrap px-4 py-3">Catégorie</th>
             <th className="whitespace-nowrap px-4 py-3">Flag</th>
             <th className="whitespace-nowrap px-4 py-3">Contrat</th>
-            <th className="whitespace-nowrap px-4 py-3">Opportunités</th>
+            <th className="whitespace-nowrap px-4 py-3">Prospection</th>
             <th className="whitespace-nowrap px-4 py-3">Alertes</th>
           </tr>
         </thead>
