@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { PageContainer } from '@/components/layout/page-container';
 import { getClientParentOptions } from '@/features/clients/queries';
 import { getMachineCategories } from '@/features/machines/queries';
@@ -21,6 +22,11 @@ export default async function OpportunitiesPage({
   return (
     <PageContainer title="Prospection">
       <div className="space-y-4">
+        <div className="flex justify-end">
+          <Link href="/opportunities/new" className="rounded bg-slate-900 px-3 py-2 text-sm font-medium text-white">
+            Nouvelle prospection
+          </Link>
+        </div>
         <OpportunityFilters clients={safeClients} machineCategories={safeMachineCategories.map((item) => ({ id: item.id, label: item.label }))} />
         <OpportunityTable opportunities={safeOpportunities} />
       </div>

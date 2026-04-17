@@ -16,12 +16,23 @@ const priorityLabels: Record<Opportunity['priority'], string> = {
   high: 'Haute'
 };
 
+const competitorCategoryLabels: Record<string, string> = {
+  hot_drinks: 'Café / boisson chaude',
+  snacking: 'Snack / confiserie',
+  sandwich_catering: 'Sandwich / traiteur',
+  cold_drinks: 'Boisson froide',
+  water_fountain: 'Fontaine à eau',
+  other: 'Autre'
+};
+
 export function OpportunityTable({
   opportunities,
-  showClient = true
+  showClient = true,
+  onEditOpportunity
 }: {
   opportunities: Opportunity[];
   showClient?: boolean;
+  onEditOpportunity?: (opportunity: Opportunity) => void;
 }) {
   const [isPending, startTransition] = useTransition();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -34,16 +45,15 @@ export function OpportunityTable({
     <div className="space-y-2">
       {errorMessage ? <StatePanel message={errorMessage} variant="error" /> : null}
       <TableShell>
-        <table className="min-w-[760px] border-collapse text-sm md:min-w-full">
+        <table className="min-w-[1200px] border-collapse text-sm md:min-w-full">
           <thead>
             <tr className="border-b bg-slate-50 text-left text-slate-600">
               {showClient ? <th className="whitespace-nowrap px-3 py-2">Client</th> : null}
               <th className="whitespace-nowrap px-3 py-2">Titre</th>
-              <th className="whitespace-nowrap px-3 py-2">Catégorie liée</th>
-              <th className="whitespace-nowrap px-3 py-2">Priorité</th>
+              <th className="whitespace-nowrap px-3 py-2">Business</th>
+              <th className="whitespace-nowrap px-3 py-2">Machines</th>
+              <th className="whitespace-nowrap px-3 py-2">Concurrence</th>
               <th className="whitespace-nowrap px-3 py-2">Statut</th>
-              <th className="whitespace-nowrap px-3 py-2">Valeur (€)</th>
-              <th className="whitespace-nowrap px-3 py-2">Probabilité</th>
               <th className="whitespace-nowrap px-3 py-2">Actions</th>
             </tr>
           </thead>
@@ -59,26 +69,37 @@ export function OpportunityTable({
                 ) : null}
                 <td className="px-3 py-2 text-slate-800">
                   <p className="font-medium">{opportunity.title}</p>
-                  {opportunity.description ? (
-                    <p className="mt-1 max-w-sm text-xs text-slate-600">{opportunity.description}</p>
-                  ) : null}
+                  {opportunity.description ? <p className="mt-1 max-w-sm text-xs text-slate-600">{opportunity.description}</p> : null}
+                  {opportunity.notes ? <p className="mt-1 max-w-sm text-xs text-slate-500">Notes: {opportunity.notes}</p> : null}
                 </td>
-                <td className="whitespace-nowrap px-3 py-2 text-slate-700">
-                  {opportunity.linkedMachineCategoryLabel ?? '—'}
+                <td className="px-3 py-2 text-xs text-slate-700">
+                  <p>Priorité: {priorityLabels[opportunity.priority]}</p>
+                  <p>Valeur: {opportunity.estimatedValue ? `${Math.round(opportunity.estimatedValue).toLocaleString('fr-FR')} €` : '—'}</p>
+                  <p>Probabilité: {opportunity.probability !== null ? `${opportunity.probability}%` : '—'}</p>
+                  <p>CA annuel: {opportunity.yearlyRevenue ? `${Math.round(opportunity.yearlyRevenue).toLocaleString('fr-FR')} €` : '—'}</p>
+                  <p>Effectif: {opportunity.employeeCount ?? '—'}</p>
                 </td>
-                <td className="whitespace-nowrap px-3 py-2 text-slate-700">
-                  {priorityLabels[opportunity.priority]}
+                <td className="px-3 py-2 text-xs text-slate-700">
+                  <p>Total: {opportunity.totalMachineCount ?? '—'}</p>
+                  <p>Catégorie liée: {opportunity.linkedMachineCategoryLabel ?? '—'}</p>
+                  <ul className="mt-1 list-disc pl-4">
+                    {Object.entries(opportunity.machineCountsByCategory).length === 0 ? <li>Pas de détail</li> : null}
+                    {Object.entries(opportunity.machineCountsByCategory).map(([category, count]) => (
+                      <li key={category}>
+                        {category}: {count}
+                      </li>
+                    ))}
+                  </ul>
+                </td>
+                <td className="px-3 py-2 text-xs text-slate-700">
+                  <p>Concurrent: {opportunity.incumbentCompetitorName ?? '—'}</p>
+                  <p>
+                    Position: {opportunity.incumbentCompetitorCategory ? competitorCategoryLabels[opportunity.incumbentCompetitorCategory] : '—'}
+                  </p>
+                  <p>Fin de contrat: {opportunity.competitorContractEndDate ?? '—'}</p>
                 </td>
                 <td className="whitespace-nowrap px-3 py-2">
                   <OpportunityStatusBadge status={opportunity.status} />
-                </td>
-                <td className="whitespace-nowrap px-3 py-2 text-slate-700">
-                  {opportunity.estimatedValue
-                    ? `${Math.round(opportunity.estimatedValue).toLocaleString('fr-FR')} €`
-                    : '—'}
-                </td>
-                <td className="whitespace-nowrap px-3 py-2 text-slate-700">
-                  {opportunity.probability !== null ? `${opportunity.probability}%` : '—'}
                 </td>
                 <td className="space-y-2 px-3 py-2">
                   <select
@@ -106,6 +127,12 @@ export function OpportunityTable({
                       </option>
                     ))}
                   </select>
+
+                  {onEditOpportunity ? (
+                    <Button size="sm" fullWidth disabled={isPending} onClick={() => onEditOpportunity(opportunity)}>
+                      Modifier
+                    </Button>
+                  ) : null}
 
                   <Button
                     variant="danger"

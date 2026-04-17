@@ -1,7 +1,7 @@
 import { cache } from 'react';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { opportunityFilterSchema } from '@/features/opportunities/schemas';
-import type { Opportunity, OpportunityFilterInput } from '@/types/opportunity';
+import type { CompetitorCategory, Opportunity, OpportunityFilterInput } from '@/types/opportunity';
 
 function toClientFlagCode(value: string | null | undefined): Opportunity['clientFlag'] {
   const normalized = value?.trim().toLowerCase();
@@ -9,6 +9,31 @@ function toClientFlagCode(value: string | null | undefined): Opportunity['client
     return normalized;
   }
   return null;
+}
+
+function toCompetitorCategory(value: string | null | undefined): CompetitorCategory | null {
+  if (value === 'hot_drinks' || value === 'snacking' || value === 'sandwich_catering' || value === 'cold_drinks' || value === 'water_fountain' || value === 'other') {
+    return value;
+  }
+  return null;
+}
+
+function toMachineCountsByCategory(value: unknown): Record<string, number> {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return {};
+  }
+
+  return Object.entries(value as Record<string, unknown>).reduce<Record<string, number>>((accumulator, [key, rawValue]) => {
+    const normalizedKey = key.trim();
+    const numericValue = typeof rawValue === 'number' ? rawValue : Number(rawValue);
+
+    if (!normalizedKey || Number.isNaN(numericValue) || numericValue < 0) {
+      return accumulator;
+    }
+
+    accumulator[normalizedKey] = Math.round(numericValue);
+    return accumulator;
+  }, {});
 }
 
 function mapOpportunityRow(row: Record<string, any>): Opportunity {
@@ -22,12 +47,20 @@ function mapOpportunityRow(row: Record<string, any>): Opportunity {
     clientName: client?.name ?? 'Client',
     title: row.title,
     description: row.description ?? null,
-    linkedMachineCategoryId: row.related_machine_category_id ?? null,
+    linkedMachineCategoryId: row.linked_machine_category_id ?? null,
     linkedMachineCategoryLabel: machineCategory?.name ?? null,
     priority: row.priority,
     status: row.status,
     estimatedValue: row.estimated_value ?? null,
     probability: row.probability ?? null,
+    yearlyRevenue: row.yearly_revenue ?? null,
+    employeeCount: row.employee_count ?? null,
+    totalMachineCount: row.total_machine_count ?? null,
+    machineCountsByCategory: toMachineCountsByCategory(row.machine_counts_by_category),
+    incumbentCompetitorName: row.incumbent_competitor_name ?? null,
+    incumbentCompetitorCategory: toCompetitorCategory(row.incumbent_competitor_category),
+    competitorContractEndDate: row.competitor_contract_end_date ?? null,
+    notes: row.notes ?? null,
     clientPostalCode: client?.postal_code ?? null,
     clientFlag: toClientFlagCode(flag?.code),
     createdAt: row.created_at,

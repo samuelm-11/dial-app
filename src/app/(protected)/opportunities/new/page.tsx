@@ -1,10 +1,19 @@
 import { PageContainer } from '@/components/layout/page-container';
-import { PlaceholderState } from '@/components/ui/placeholder-state';
+import { getClientParentOptions } from '@/features/clients/queries';
+import { getMachineCategories } from '@/features/machines/queries';
+import { OpportunityForm } from '@/features/opportunities/components/opportunity-form';
 
-export default function NewOpportunityPage() {
+export default async function NewOpportunityPage() {
+  const [clients, machineCategories] = await Promise.all([getClientParentOptions(), getMachineCategories()]);
+  const safeClients = Array.isArray(clients) ? clients : [];
+  const safeMachineCategories = Array.isArray(machineCategories) ? machineCategories : [];
+
   return (
     <PageContainer title="Nouvelle prospection">
-      <PlaceholderState message="Formulaire de prospection à implémenter à l'étape suivante." />
+      <OpportunityForm
+        clientOptions={safeClients.map((client) => ({ id: client.id, label: client.name }))}
+        machineCategoryOptions={safeMachineCategories.map((category) => ({ id: category.id, label: category.label }))}
+      />
     </PageContainer>
   );
 }

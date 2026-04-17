@@ -1,11 +1,11 @@
 import { z } from 'zod';
-import type { OpportunityPriority, OpportunityStatus } from '@/types/opportunity';
+import { competitorCategoryValues, type OpportunityPriority, type OpportunityStatus } from '@/types/opportunity';
 
 export const opportunityStatusValues = ['open', 'qualified', 'proposal', 'won', 'lost'] as const satisfies readonly OpportunityStatus[];
 export const opportunityPriorityValues = ['low', 'medium', 'high'] as const satisfies readonly OpportunityPriority[];
 
 const emptyToUndefined = (value: unknown) => {
-  if (value === '' || value === null) {
+  if (value === '' || value === null || value === undefined || (typeof value === 'number' && Number.isNaN(value))) {
     return undefined;
   }
   return value;
@@ -15,6 +15,11 @@ const nullableNumberSchema = z.preprocess(
   emptyToUndefined,
   z.coerce.number().nonnegative('La valeur doit être positive.').optional()
 );
+
+const machineCountsByCategorySchema = z
+  .record(z.string().trim().min(1), z.coerce.number().int().min(0))
+  .optional()
+  .default({});
 
 export const opportunityFormSchema = z.object({
   clientId: z.string().uuid('Client invalide.'),
@@ -26,7 +31,17 @@ export const opportunityFormSchema = z.object({
   estimatedValue: nullableNumberSchema.nullable(),
   probability: z
     .preprocess(emptyToUndefined, z.coerce.number().min(0, 'Min 0%.').max(100, 'Max 100%.').optional())
-    .nullable()
+    .nullable(),
+  yearlyRevenue: nullableNumberSchema.nullable(),
+  employeeCount: z.preprocess(emptyToUndefined, z.coerce.number().int().nonnegative('Le nombre doit être positif.').optional()).nullable(),
+  totalMachineCount: z.preprocess(emptyToUndefined, z.coerce.number().int().nonnegative('Le nombre doit être positif.').optional()).nullable(),
+  machineCountsByCategory: machineCountsByCategorySchema,
+  incumbentCompetitorName: z.string().max(180, 'Nom du concurrent trop long.').optional().nullable(),
+  incumbentCompetitorCategory: z.enum(competitorCategoryValues).optional().nullable(),
+  competitorContractEndDate: z
+    .preprocess(emptyToUndefined, z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date invalide.').optional())
+    .nullable(),
+  notes: z.string().max(2500, 'Notes trop longues.').optional().nullable()
 });
 
 export const opportunityUpdateSchema = opportunityFormSchema.omit({ clientId: true }).partial();
