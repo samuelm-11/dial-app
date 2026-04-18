@@ -4,6 +4,17 @@ export type OpportunityStatus = 'open' | 'qualified' | 'proposal' | 'won' | 'los
 
 export type OpportunityPriority = 'low' | 'medium' | 'high';
 
+export const competitorCategoryValues = [
+  'hot_drinks',
+  'snacking',
+  'sandwich_catering',
+  'cold_drinks',
+  'water_fountain',
+  'other'
+] as const;
+
+export type CompetitorCategory = (typeof competitorCategoryValues)[number];
+
 export type Opportunity = {
   id: string;
   clientId: string;
@@ -16,6 +27,14 @@ export type Opportunity = {
   status: OpportunityStatus;
   estimatedValue: number | null;
   probability: number | null;
+  yearlyRevenue: number | null;
+  employeeCount: number | null;
+  totalMachineCount: number | null;
+  machineCountsByCategory: Record<string, number>;
+  incumbentCompetitorName: string | null;
+  incumbentCompetitorCategory: CompetitorCategory | null;
+  competitorContractEndDate: string | null;
+  notes: string | null;
   clientPostalCode: string | null;
   clientFlag: ClientFlagCode | null;
   createdAt: string;
@@ -44,6 +63,14 @@ export type CreateOpportunityInput = {
   status?: OpportunityStatus;
   estimatedValue?: number | null;
   probability?: number | null;
+  yearlyRevenue?: number | null;
+  employeeCount?: number | null;
+  totalMachineCount?: number | null;
+  machineCountsByCategory?: Record<string, number>;
+  incumbentCompetitorName?: string | null;
+  incumbentCompetitorCategory?: CompetitorCategory | null;
+  competitorContractEndDate?: string | null;
+  notes?: string | null;
 };
 
 export type UpdateOpportunityInput = Partial<Omit<CreateOpportunityInput, 'clientId'>>;
