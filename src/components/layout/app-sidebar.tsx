@@ -10,6 +10,7 @@ const navItems = [
   { href: '/contracts', label: 'Contrats', icon: '▤' },
   { href: '/opportunities', label: 'Prospection', icon: '◬' },
   { href: '/alerts', label: 'Alertes', icon: '◉' },
+  { href: '/interventions', label: 'Interventions', icon: '⚒' },
   { href: '/imports', label: 'Imports', icon: '↥' },
   { href: '/settings', label: 'Paramètres', icon: '⚙' },
   { href: '/users', label: 'Utilisateurs', icon: '☰' },
