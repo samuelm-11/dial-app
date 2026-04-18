@@ -7,7 +7,6 @@ import { DialLogo } from '@/components/branding/dial-logo';
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: '▦' },
   { href: '/clients', label: 'Clients', icon: '◻' },
-  { href: '/contracts', label: 'Contrats', icon: '▤' },
   { href: '/opportunities', label: 'Prospection', icon: '◬' },
   { href: '/alerts', label: 'Alertes', icon: '◉' },
   { href: '/interventions', label: 'Interventions', icon: '⚒' },

@@ -21,14 +21,34 @@ export function ClientContractsTab({ clientId, contracts }: { clientId: string; 
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <p className="text-sm font-medium text-slate-900">{contract.title}</p>
-                  <p className="text-xs text-slate-600">
-                    {contract.startDate} → {contract.endDate}
-                  </p>
                 </div>
                 <button className="rounded border border-slate-300 px-2 py-1 text-xs" onClick={() => setEditingId(editingId === contract.id ? null : contract.id)}>
                   {editingId === contract.id ? 'Fermer édition' : 'Modifier'}
                 </button>
               </div>
+
+              <dl className="grid gap-x-4 gap-y-2 rounded border border-slate-100 bg-slate-50 p-3 text-xs text-slate-700 sm:grid-cols-2">
+                <div>
+                  <dt className="font-medium text-slate-900">Date de début</dt>
+                  <dd>{contract.startDate}</dd>
+                </div>
+                <div>
+                  <dt className="font-medium text-slate-900">Date de fin</dt>
+                  <dd>{contract.endDate}</dd>
+                </div>
+                <div>
+                  <dt className="font-medium text-slate-900">Auto-renouvellement</dt>
+                  <dd>{contract.autoRenewal ? 'Oui' : 'Non'}</dd>
+                </div>
+                <div>
+                  <dt className="font-medium text-slate-900">Chemin PDF</dt>
+                  <dd className="break-all">{contract.privatePdfPath ?? 'Aucun PDF'}</dd>
+                </div>
+                <div className="sm:col-span-2">
+                  <dt className="font-medium text-slate-900">Notes</dt>
+                  <dd>{contract.notes ?? 'Aucune note'}</dd>
+                </div>
+              </dl>
 
               {editingId === contract.id ? <ContractForm clientId={clientId} contract={contract} onDone={() => setEditingId(null)} /> : null}
               <ContractUploadField clientId={clientId} contract={contract} />

@@ -9,6 +9,7 @@ export type Contract = {
   endDate: string;
   privatePdfPath: string | null;
   autoRenewal: boolean;
+  notes: string | null;
   createdAt: string;
   updatedAt: string;
   clientPostalCode: string | null;
