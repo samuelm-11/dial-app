@@ -1,11 +1,11 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseServerActionClient } from '@/lib/supabase/server';
 import { parseBoolean, normalizeText } from '@/features/imports/helpers';
 import { runImportPayloadSchema, type ImportExecutionResult, type MappedImportRow } from '@/features/imports/schemas';
 
-async function findClientIdByName(clientName: string, supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>) {
+async function findClientIdByName(clientName: string, supabase: Awaited<ReturnType<typeof createSupabaseServerActionClient>>) {
   const { data } = await supabase
     .from('clients')
     .select('id, name')
@@ -16,7 +16,7 @@ async function findClientIdByName(clientName: string, supabase: Awaited<ReturnTy
   return data?.id ?? null;
 }
 
-async function importClient(row: MappedImportRow, result: ImportExecutionResult, supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>) {
+async function importClient(row: MappedImportRow, result: ImportExecutionResult, supabase: Awaited<ReturnType<typeof createSupabaseServerActionClient>>) {
   const name = normalizeText(row.values.name);
   const city = normalizeText(row.values.city);
 
@@ -53,7 +53,7 @@ async function importClient(row: MappedImportRow, result: ImportExecutionResult,
   result.created.clients += 1;
 }
 
-async function importContact(row: MappedImportRow, result: ImportExecutionResult, supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>) {
+async function importContact(row: MappedImportRow, result: ImportExecutionResult, supabase: Awaited<ReturnType<typeof createSupabaseServerActionClient>>) {
   const clientId = await findClientIdByName(normalizeText(row.values.clientName), supabase);
   if (!clientId) {
     throw new Error('Client introuvable pour ce contact.');
@@ -97,7 +97,7 @@ async function importContact(row: MappedImportRow, result: ImportExecutionResult
   result.created.contacts += 1;
 }
 
-async function importMachine(row: MappedImportRow, result: ImportExecutionResult, supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>) {
+async function importMachine(row: MappedImportRow, result: ImportExecutionResult, supabase: Awaited<ReturnType<typeof createSupabaseServerActionClient>>) {
   const clientId = await findClientIdByName(normalizeText(row.values.clientName), supabase);
   if (!clientId) {
     throw new Error('Client introuvable pour cette machine.');
@@ -137,7 +137,7 @@ async function importMachine(row: MappedImportRow, result: ImportExecutionResult
   result.created.machines += 1;
 }
 
-async function importContract(row: MappedImportRow, result: ImportExecutionResult, supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>) {
+async function importContract(row: MappedImportRow, result: ImportExecutionResult, supabase: Awaited<ReturnType<typeof createSupabaseServerActionClient>>) {
   const clientId = await findClientIdByName(normalizeText(row.values.clientName), supabase);
   if (!clientId) {
     throw new Error('Client introuvable pour ce contrat.');
@@ -175,7 +175,7 @@ async function importContract(row: MappedImportRow, result: ImportExecutionResul
 
 export async function runImport(payload: unknown): Promise<ImportExecutionResult> {
   const parsed = runImportPayloadSchema.parse(payload);
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerActionClient();
 
   const result: ImportExecutionResult = {
     created: { clients: 0, contacts: 0, machines: 0, contracts: 0 },

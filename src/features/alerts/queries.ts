@@ -1,5 +1,5 @@
 import { cache } from 'react';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseServerComponentClient } from '@/lib/supabase/server';
 import { alertFilterSchema } from '@/features/alerts/schemas';
 import type { Alert, AlertDueBucket, AlertFilterInput, AlertStatus } from '@/types/alert';
 
@@ -76,7 +76,7 @@ function mapAlertRow(row: any): Alert {
 export const getAlerts = cache(async (filters: AlertFilterInput = {}): Promise<Alert[]> => {
   const parsedFilters = alertFilterSchema.safeParse(filters);
   const payload = parsedFilters.success ? parsedFilters.data : {};
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerComponentClient();
 
   const { data, error } = await supabase
     .from('notifications')

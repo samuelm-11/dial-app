@@ -1,13 +1,13 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseServerActionClient } from '@/lib/supabase/server';
 import { opportunityFormSchema, opportunityUpdateSchema } from '@/features/opportunities/schemas';
 import type { CreateOpportunityInput, OpportunityStatus, UpdateOpportunityInput } from '@/types/opportunity';
 
 export async function createOpportunity(input: CreateOpportunityInput) {
   const payload = opportunityFormSchema.parse(input);
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerActionClient();
 
   const { error } = await supabase.from('client_opportunities').insert({
     client_id: payload.clientId,
@@ -39,7 +39,7 @@ export async function createOpportunity(input: CreateOpportunityInput) {
 
 export async function updateOpportunity(clientId: string, opportunityId: string, input: UpdateOpportunityInput) {
   const payload = opportunityUpdateSchema.parse(input);
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerActionClient();
 
   const { error } = await supabase
     .from('client_opportunities')
@@ -73,7 +73,7 @@ export async function updateOpportunity(clientId: string, opportunityId: string,
 }
 
 export async function deleteOpportunity(clientId: string, opportunityId: string) {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerActionClient();
 
   const { error } = await supabase.from('client_opportunities').delete().eq('id', opportunityId).eq('client_id', clientId);
 
@@ -87,7 +87,7 @@ export async function deleteOpportunity(clientId: string, opportunityId: string)
 }
 
 export async function updateOpportunityStatus(clientId: string, opportunityId: string, status: OpportunityStatus) {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerActionClient();
 
   const { error } = await supabase
     .from('client_opportunities')

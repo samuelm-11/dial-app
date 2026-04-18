@@ -1,5 +1,5 @@
 import { cache } from 'react';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseServerComponentClient } from '@/lib/supabase/server';
 import { filterContracts, toContractsEndingSoon } from '@/features/contracts/helpers';
 import { contractFilterSchema } from '@/features/contracts/schemas';
 import type { Contract, ContractEndingSoon, ContractFilterInput } from '@/types/contract';
@@ -45,7 +45,7 @@ function mapContractRow(row: any): Contract {
 export const getContracts = cache(async (filters: ContractFilterInput = {}): Promise<Contract[]> => {
   const parsedFilters = contractFilterSchema.safeParse(filters);
   const payload = parsedFilters.success ? parsedFilters.data : {};
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerComponentClient();
 
   const { data, error } = await supabase
     .from('contracts')

@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseServerActionClient } from '@/lib/supabase/server';
 import { buildContractPdfPath } from '@/features/contracts/helpers';
 import { contractFormSchema, contractUpdateSchema, contractUploadSchema } from '@/features/contracts/schemas';
 import type { CreateContractInput, UpdateContractInput } from '@/types/contract';
@@ -10,7 +10,7 @@ const CONTRACTS_BUCKET = 'contracts';
 
 export async function createContract(input: CreateContractInput) {
   const payload = contractFormSchema.parse(input);
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerActionClient();
 
   const insertPayload = {
     client_id: payload.clientId,
@@ -32,7 +32,7 @@ export async function createContract(input: CreateContractInput) {
 
 export async function updateContract(clientId: string, contractId: string, input: UpdateContractInput) {
   const payload = contractUpdateSchema.parse(input);
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerActionClient();
 
   const { error } = await supabase
     .from('contracts')
@@ -60,7 +60,7 @@ export async function uploadContractPdf(clientId: string, contractId: string, fi
     mimeType: file.type
   });
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerActionClient();
   const filePath = buildContractPdfPath(clientId, contractId, parsedFile.fileName);
 
   const { error: uploadError } = await supabase.storage.from(CONTRACTS_BUCKET).upload(filePath, file, {
@@ -90,7 +90,7 @@ export async function uploadContractPdf(clientId: string, contractId: string, fi
 }
 
 export async function replaceContractPdf(clientId: string, contractId: string, file: File) {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerActionClient();
 
   const { data: currentContract } = await supabase
     .from('contracts')
@@ -109,7 +109,7 @@ export async function replaceContractPdf(clientId: string, contractId: string, f
 }
 
 export async function getContractFileUrl(contractPdfPath: string) {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerActionClient();
 
   const { data, error } = await supabase.storage.from(CONTRACTS_BUCKET).createSignedUrl(contractPdfPath, 60 * 5);
 

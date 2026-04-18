@@ -1,5 +1,5 @@
 import { cache } from 'react';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseServerComponentClient } from '@/lib/supabase/server';
 import type { Client, ClientFilterInput, ClientHierarchyNode, ClientWithRelations } from '@/types/client';
 import type { Contact } from '@/types/contact';
 import { buildClientHierarchy, filterClients } from '@/features/clients/helpers';
@@ -58,7 +58,7 @@ function mapClientRow(row: Record<string, any>): Client {
 }
 
 export const getClients = cache(async (filters: ClientFilterInput = {}): Promise<Client[]> => {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerComponentClient();
   const { data, error } = await supabase
     .from('clients')
     .select('*, contracts(id), client_opportunities(id, status), notifications(id, status), client_categories(name), flag_definitions(code)')
@@ -81,7 +81,7 @@ export const getClientHierarchy = cache(async (filters: ClientFilterInput = {}):
 });
 
 export const getClientById = cache(async (id: string): Promise<ClientWithRelations | null> => {
-  const [clients, supabase] = await Promise.all([getClients({}), createSupabaseServerClient()]);
+  const [clients, supabase] = await Promise.all([getClients({}), createSupabaseServerComponentClient()]);
   const current = clients.find((item) => item.id === id);
 
   if (!current) {

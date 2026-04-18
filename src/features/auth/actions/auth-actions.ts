@@ -1,10 +1,10 @@
 'use server';
 
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseServerActionClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
 
 export async function loginAction(email: string, password: string): Promise<{ error: string | null }> {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerActionClient();
 
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
@@ -39,6 +39,6 @@ export async function loginAction(email: string, password: string): Promise<{ er
 }
 
 export async function logoutAction() {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerActionClient();
   await supabase.auth.signOut();
 }

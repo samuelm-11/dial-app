@@ -1,13 +1,13 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseServerActionClient } from '@/lib/supabase/server';
 import { createClientMachineSchema, machineCategorySchema, machineTypeSchema, updateClientMachineSchema } from '@/features/machines/schemas';
 import type { CreateClientMachineInput, MachineCategory, MachineType, UpdateClientMachineInput } from '@/types/machine';
 
 export async function createClientMachine(clientId: string, input: CreateClientMachineInput) {
   const payload = createClientMachineSchema.parse(input);
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerActionClient();
 
   const { data: machineType } = await supabase
     .from('machine_types')
@@ -35,7 +35,7 @@ export async function createClientMachine(clientId: string, input: CreateClientM
 
 export async function updateClientMachine(clientId: string, machineId: string, input: UpdateClientMachineInput) {
   const payload = updateClientMachineSchema.parse(input);
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerActionClient();
 
   const { error } = await supabase
     .from('client_machines')
@@ -58,7 +58,7 @@ export async function updateClientMachine(clientId: string, machineId: string, i
 }
 
 export async function markFilterChanged(clientId: string, machineId: string) {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerActionClient();
   const today = new Date().toISOString().slice(0, 10);
 
   const { data, error } = await supabase
@@ -83,7 +83,7 @@ export async function markFilterChanged(clientId: string, machineId: string) {
 }
 
 export async function removeClientMachine(clientId: string, machineId: string) {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerActionClient();
   const { error } = await supabase.from('client_machines').delete().eq('id', machineId).eq('client_id', clientId);
 
   if (error) {
@@ -95,7 +95,7 @@ export async function removeClientMachine(clientId: string, machineId: string) {
 
 export async function upsertMachineCategory(categoryId: string | null, input: { code: string; label: string; isActive?: boolean }) {
   const payload = machineCategorySchema.parse(input);
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerActionClient();
 
   if (categoryId) {
     const { error } = await supabase
@@ -137,7 +137,7 @@ export async function upsertMachineType(
   }
 ) {
   const payload = machineTypeSchema.parse(input);
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerActionClient();
 
   const updatePayload = {
     machine_category_id: payload.machineCategoryId,

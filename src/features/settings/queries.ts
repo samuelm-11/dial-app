@@ -1,5 +1,5 @@
 import { cache } from 'react';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseServerComponentClient } from '@/lib/supabase/server';
 import type {
   ClientCategorySetting,
   FlagSetting,
@@ -53,7 +53,7 @@ export const requiredNotificationRules = fallbackNotificationRules.map((rule) =>
 }));
 
 export const getClientCategories = cache(async (): Promise<ClientCategorySetting[]> => {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerComponentClient();
   const { data, error } = await supabase.from('client_categories').select('*').order('label', { ascending: true });
 
   if (error || !data) {
@@ -71,7 +71,7 @@ export const getClientCategories = cache(async (): Promise<ClientCategorySetting
 });
 
 export const getFlags = cache(async (): Promise<FlagSetting[]> => {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerComponentClient();
   const { data, error } = await supabase.from('flag_definitions').select('*').order('label', { ascending: true });
 
   if (error || !data) {
@@ -90,7 +90,7 @@ export const getFlags = cache(async (): Promise<FlagSetting[]> => {
 });
 
 export const getMachineCategories = cache(async (): Promise<MachineCategorySetting[]> => {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerComponentClient();
   const { data, error } = await supabase.from('machine_categories').select('*').order('label', { ascending: true });
 
   if (error || !data) {
@@ -108,7 +108,7 @@ export const getMachineCategories = cache(async (): Promise<MachineCategorySetti
 });
 
 export const getMachineTypes = cache(async (): Promise<MachineTypeSetting[]> => {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerComponentClient();
   const { data, error } = await supabase.from('machine_types').select('*').order('label', { ascending: true });
 
   if (error || !data) {
@@ -129,7 +129,7 @@ export const getMachineTypes = cache(async (): Promise<MachineTypeSetting[]> => 
 });
 
 export const getNotificationRules = cache(async (): Promise<NotificationRuleSetting[]> => {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerComponentClient();
   const { data, error } = await supabase.from('notification_rules').select('*').order('days_before_due', { ascending: false });
 
   if (error || !data) {

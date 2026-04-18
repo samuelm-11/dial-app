@@ -1,11 +1,11 @@
 import { cache } from 'react';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseServerComponentClient } from '@/lib/supabase/server';
 import type { Contact } from '@/types/contact';
 
 const fallbackContacts: Contact[] = [];
 
 export const getContactsByClientId = cache(async (clientId: string): Promise<Contact[]> => {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerComponentClient();
   const { data, error } = await supabase
     .from('contacts')
     .select('*')
