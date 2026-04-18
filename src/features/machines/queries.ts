@@ -1,5 +1,5 @@
 import { cache } from 'react';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseServerComponentClient } from '@/lib/supabase/server';
 import { isFilterDueSoon, machineTypeLooksLike } from '@/features/machines/helpers';
 import type { ClientMachine, MachineCategory, MachineFilterInput, MachineType } from '@/types/machine';
 
@@ -39,7 +39,7 @@ const fallbackTypes: MachineType[] = [
 const fallbackClientMachines: ClientMachine[] = [];
 
 export const getMachineCategories = cache(async (): Promise<MachineCategory[]> => {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerComponentClient();
   const { data, error } = await supabase.from('machine_categories').select('*').order('label', { ascending: true });
 
   if (error || !data) {
@@ -57,7 +57,7 @@ export const getMachineCategories = cache(async (): Promise<MachineCategory[]> =
 });
 
 export const getMachineTypes = cache(async (): Promise<MachineType[]> => {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerComponentClient();
   const { data, error } = await supabase.from('machine_types').select('*').order('label', { ascending: true });
 
   if (error || !data) {
@@ -78,7 +78,7 @@ export const getMachineTypes = cache(async (): Promise<MachineType[]> => {
 });
 
 export const getClientMachines = cache(async (clientId: string): Promise<ClientMachine[]> => {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerComponentClient();
 
 
   const { data, error } = await supabase
@@ -128,7 +128,7 @@ export async function getClientIdsMatchingMachineFilters(filters: MachineFilterI
     return null;
   }
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerComponentClient();
 
   let dueSoonClientIds: Set<string> | null = null;
   if (filters.withFiltersDueSoon) {

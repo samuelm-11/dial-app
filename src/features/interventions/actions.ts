@@ -1,12 +1,12 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseServerActionClient } from '@/lib/supabase/server';
 import { interventionFormSchema } from '@/features/interventions/schemas';
 
 export async function createIntervention(input: unknown) {
   const payload = interventionFormSchema.parse(input);
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerActionClient();
 
   const { error } = await supabase.from('interventions').insert({
     client_id: payload.clientId,

@@ -1,5 +1,5 @@
 import { cache } from 'react';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseServerComponentClient } from '@/lib/supabase/server';
 import type { Intervention } from '@/types/intervention';
 
 function mapInterventionRow(row: any): Intervention {
@@ -34,7 +34,7 @@ function mapInterventionRow(row: any): Intervention {
 }
 
 export const getInterventions = cache(async (): Promise<Intervention[]> => {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerComponentClient();
 
   const { data, error } = await supabase
     .from('interventions')
@@ -50,7 +50,7 @@ export const getInterventions = cache(async (): Promise<Intervention[]> => {
 });
 
 export async function getInterventionFormOptions() {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerComponentClient();
 
   const [clientsRes, machinesRes, techniciansRes] = await Promise.all([
     supabase.from('clients').select('id, name').order('name', { ascending: true }),

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { requireRole } from '@/lib/auth/guards';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseServerActionClient } from '@/lib/supabase/server';
 import {
   clientCategorySchema,
   flagSchema,
@@ -31,7 +31,7 @@ async function assertSettingsAccess() {
 export async function upsertClientCategory(categoryId: string | null, input: ClientCategoryValues) {
   await assertSettingsAccess();
   const payload = clientCategorySchema.parse(input);
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerActionClient();
 
   const updatePayload = { code: payload.code, label: payload.label, is_active: payload.isActive };
 
@@ -54,7 +54,7 @@ export async function toggleClientCategory(category: ClientCategorySetting) {
 export async function upsertFlag(flagId: string | null, input: FlagValues) {
   await assertSettingsAccess();
   const payload = flagSchema.parse(input);
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerActionClient();
 
   const updatePayload = {
     code: payload.code,
@@ -80,7 +80,7 @@ export async function toggleFlag(flag: FlagSetting) {
 export async function upsertMachineCategory(categoryId: string | null, input: MachineCategoryValues) {
   await assertSettingsAccess();
   const payload = machineCategorySchema.parse(input);
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerActionClient();
 
   const updatePayload = { code: payload.code, label: payload.label, is_active: payload.isActive };
 
@@ -104,7 +104,7 @@ export async function toggleMachineCategory(category: MachineCategorySetting) {
 export async function upsertMachineType(typeId: string | null, input: MachineTypeValues) {
   await assertSettingsAccess();
   const payload = machineTypeSchema.parse(input);
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerActionClient();
 
   const updatePayload = {
     machine_category_id: payload.machineCategoryId,
@@ -139,7 +139,7 @@ export async function toggleMachineType(machineType: MachineTypeSetting) {
 
 export async function ensureDefaultNotificationRules() {
   await assertSettingsAccess();
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerActionClient();
 
   const { error } = await supabase.from('notification_rules').upsert(
     requiredNotificationRules.map((rule) => ({
@@ -161,7 +161,7 @@ export async function ensureDefaultNotificationRules() {
 export async function upsertNotificationRule(ruleId: string | null, input: NotificationRuleValues) {
   await assertSettingsAccess();
   const payload = notificationRuleSchema.parse(input);
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerActionClient();
 
   const updatePayload = {
     code: payload.code,

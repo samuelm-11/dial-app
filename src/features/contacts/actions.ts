@@ -1,13 +1,13 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseServerActionClient } from '@/lib/supabase/server';
 import { createContactSchema, updateContactSchema } from '@/features/contacts/schemas';
 import type { CreateContactInput, UpdateContactInput } from '@/types/contact';
 
 export async function createContact(clientId: string, input: CreateContactInput) {
   const payload = createContactSchema.parse(input);
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerActionClient();
 
   if (payload.isPrimary) {
     await supabase.from('contacts').update({ is_primary: false }).eq('client_id', clientId);
@@ -32,7 +32,7 @@ export async function createContact(clientId: string, input: CreateContactInput)
 
 export async function updateContact(contactId: string, clientId: string, input: UpdateContactInput) {
   const payload = updateContactSchema.parse(input);
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerActionClient();
 
   if (payload.isPrimary) {
     await supabase.from('contacts').update({ is_primary: false }).eq('client_id', clientId);
@@ -58,7 +58,7 @@ export async function updateContact(contactId: string, clientId: string, input: 
 }
 
 export async function deleteContact(contactId: string, clientId: string) {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerActionClient();
   const { error } = await supabase.from('contacts').delete().eq('id', contactId);
 
   if (error) {
@@ -69,7 +69,7 @@ export async function deleteContact(contactId: string, clientId: string) {
 }
 
 export async function setPrimaryContact(contactId: string, clientId: string) {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerActionClient();
 
   await supabase.from('contacts').update({ is_primary: false }).eq('client_id', clientId);
   const { error } = await supabase.from('contacts').update({ is_primary: true }).eq('id', contactId);

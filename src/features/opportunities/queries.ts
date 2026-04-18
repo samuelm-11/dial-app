@@ -1,5 +1,5 @@
 import { cache } from 'react';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseServerComponentClient } from '@/lib/supabase/server';
 import { opportunityFilterSchema } from '@/features/opportunities/schemas';
 import type { CompetitorCategory, Opportunity, OpportunityFilterInput } from '@/types/opportunity';
 
@@ -119,7 +119,7 @@ function filterOpportunities(opportunities: Opportunity[], filters: OpportunityF
 export const getOpportunities = cache(async (filters: OpportunityFilterInput = {}): Promise<Opportunity[]> => {
   const parsedFilters = opportunityFilterSchema.safeParse(filters);
   const payload = parsedFilters.success ? parsedFilters.data : {};
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerComponentClient();
 
   const { data, error } = await supabase
     .from('client_opportunities')

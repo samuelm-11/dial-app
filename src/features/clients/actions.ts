@@ -1,13 +1,13 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseServerActionClient } from '@/lib/supabase/server';
 import { clientFormSchema, clientUpdateSchema } from '@/features/clients/schemas';
 import type { CreateClientInput, UpdateClientInput } from '@/types/client';
 
 export async function createClient(input: CreateClientInput) {
   const payload = clientFormSchema.parse(input);
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerActionClient();
 
   const { error } = await supabase.from('clients').insert({
     name: payload.name,
@@ -32,7 +32,7 @@ export async function createClient(input: CreateClientInput) {
 
 export async function updateClient(clientId: string, input: UpdateClientInput) {
   const payload = clientUpdateSchema.parse(input);
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerActionClient();
 
   const { error } = await supabase
     .from('clients')

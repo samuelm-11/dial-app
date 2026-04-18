@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { requireAuth, requireRole } from '@/lib/auth/guards';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseServerActionClient } from '@/lib/supabase/server';
 import { inviteUserSchema, userUpdateSchema, type InviteUserValues, type UserUpdateValues } from '@/features/users/schemas';
 import type { UserInvitationPlaceholder } from '@/types/user';
 
@@ -20,7 +20,7 @@ export async function updateUser(userId: string, input: UserUpdateValues) {
     throw new Error('Vous ne pouvez pas désactiver votre propre compte.');
   }
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerActionClient();
 
   const { error } = await supabase.from('profiles').update({ role: payload.role, is_active: payload.isActive }).eq('id', userId);
 

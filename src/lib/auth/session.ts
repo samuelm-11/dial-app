@@ -1,17 +1,17 @@
 import { cache } from 'react';
 import type { User } from '@supabase/supabase-js';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseServerComponentClient } from '@/lib/supabase/server';
 import type { UserProfile } from '@/types/auth';
 
 export const getSessionUser = cache(async (): Promise<User | null> => {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerComponentClient();
   const { data } = await supabase.auth.getUser();
 
   return data.user ?? null;
 });
 
 export const getCurrentUserProfile = cache(async (): Promise<UserProfile | null> => {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerComponentClient();
   const {
     data: { user }
   } = await supabase.auth.getUser();

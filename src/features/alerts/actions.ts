@@ -1,12 +1,12 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseServerActionClient } from '@/lib/supabase/server';
 import { alertUpdateStatusSchema } from '@/features/alerts/schemas';
 
 async function updateAlertStatus(id: string, status: 'done' | 'dismissed') {
   const payload = alertUpdateStatusSchema.parse({ id, status });
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerActionClient();
 
   const { error } = await supabase
     .from('alerts')

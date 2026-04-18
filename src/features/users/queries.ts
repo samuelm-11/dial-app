@@ -1,5 +1,5 @@
 import { cache } from 'react';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseServerComponentClient } from '@/lib/supabase/server';
 import { getCurrentUserProfile } from '@/lib/auth/session';
 import type { UserAccountSummary, UserListItem } from '@/types/user';
 
@@ -18,7 +18,7 @@ const fallbackUsers: UserListItem[] = [
 ];
 
 export const getUsers = cache(async (): Promise<UserListItem[]> => {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerComponentClient();
   const { data, error } = await supabase
     .from('profiles')
     .select('id, full_name, email, role, is_active, created_at, updated_at')
