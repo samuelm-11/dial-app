@@ -1,6 +1,7 @@
 import { cache } from 'react';
 import { createSupabaseServerComponentClient } from '@/lib/supabase/server';
 import type { Intervention } from '@/types/intervention';
+import { seedFakeData } from '@/lib/fake-data';
 
 function mapInterventionRow(row: any): Intervention {
   const client = Array.isArray(row.clients) ? row.clients[0] : row.clients;
@@ -42,8 +43,8 @@ export const getInterventions = cache(async (): Promise<Intervention[]> => {
     .order('intervention_date', { ascending: false })
     .order('created_at', { ascending: false });
 
-  if (error || !Array.isArray(data)) {
-    return [];
+  if (error || !Array.isArray(data) || data.length === 0) {
+    return seedFakeData().interventions;
   }
 
   return data.map(mapInterventionRow);

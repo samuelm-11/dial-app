@@ -22,28 +22,29 @@ type RestockingRound = {
   }>;
 };
 
+// Demo rounds loaded when no persisted reassort module exists yet.
 const rounds: RestockingRound[] = [
   {
     id: 'TR-2026-001',
     date: '2026-04-29',
     employeeId: 'emp-1',
-    employeeName: 'Nadia K.',
+    employeeName: 'Maxime R.',
     status: 'en_cours',
     stops: [
       {
         order: 1,
-        clientName: 'Clinique Horizon',
-        siteName: 'Bâtiment A',
-        address: '14 Rue des Acacias, Lyon',
+        clientName: 'Ateliers Mécaniques de Liège',
+        siteName: 'Site principal',
+        address: 'Rue des Vennes 210, Liège',
         machines: ['Distributeur boissons #A12', 'Snacks #S04'],
         categories: ['Boissons fraîches', 'Snacks salés', 'Eaux'],
         status: 'en_cours'
       },
       {
         order: 2,
-        clientName: 'TechnoPark',
-        siteName: 'Open Space Nord',
-        address: "8 Avenue de l'Industrie, Lyon",
+        clientName: 'LogiWallonie',
+        siteName: 'Entrepôt principal',
+        address: "Rue de l’Aéroport 8, Grâce-Hollogne",
         machines: ['Combo #C22'],
         categories: ['Sandwiches', 'Snacks sucrés', 'Boissons énergétiques'],
         status: 'a_faire'
@@ -59,9 +60,9 @@ const rounds: RestockingRound[] = [
     stops: [
       {
         order: 1,
-        clientName: 'Centre Delta',
-        siteName: 'Accueil principal',
-        address: '2 Place des Tilleuls, Villeurbanne',
+        clientName: 'Gare Liège-Guillemins',
+        siteName: 'Hall voyageurs',
+        address: 'Place des Guillemins 2, Liège',
         machines: ['Eau #W09', 'Snacks #S31'],
         categories: ['Eaux', 'Snacks salés'],
         status: 'a_faire'

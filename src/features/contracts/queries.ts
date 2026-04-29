@@ -3,6 +3,7 @@ import { createSupabaseServerComponentClient } from '@/lib/supabase/server';
 import { filterContracts, toContractsEndingSoon } from '@/features/contracts/helpers';
 import { contractFilterSchema } from '@/features/contracts/schemas';
 import type { Contract, ContractEndingSoon, ContractFilterInput } from '@/types/contract';
+import { seedFakeData } from '@/lib/fake-data';
 
 function toClientCategoryCode(value: string | null | undefined): Contract['clientCategory'] {
   const normalized = value?.trim().toLowerCase();
@@ -53,7 +54,7 @@ export const getContracts = cache(async (filters: ContractFilterInput = {}): Pro
     .select('*, clients(name, postal_code, city, client_categories(name), flag_definitions(code))')
     .order('end_date', { ascending: true });
 
-  const source = error || !Array.isArray(data) ? [] : data.map(mapContractRow);
+  const source = error || !Array.isArray(data) || data.length === 0 ? seedFakeData().contracts : data.map(mapContractRow);
   return filterContracts(source, payload);
 });
 

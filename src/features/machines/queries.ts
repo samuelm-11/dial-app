@@ -2,6 +2,7 @@ import { cache } from 'react';
 import { createSupabaseServerComponentClient } from '@/lib/supabase/server';
 import { isFilterDueSoon, machineTypeLooksLike } from '@/features/machines/helpers';
 import type { ClientMachine, MachineCategory, MachineFilterInput, MachineType } from '@/types/machine';
+import { seedFakeData } from '@/lib/fake-data';
 
 const fallbackCategories: MachineCategory[] = [
   {
@@ -42,8 +43,8 @@ export const getMachineCategories = cache(async (): Promise<MachineCategory[]> =
   const supabase = await createSupabaseServerComponentClient();
   const { data, error } = await supabase.from('machine_categories').select('*').order('label', { ascending: true });
 
-  if (error || !data) {
-    return fallbackCategories;
+  if (error || !data || data.length === 0) {
+    return seedFakeData().machineCategories.length ? seedFakeData().machineCategories : fallbackCategories;
   }
 
   return data.map((item) => ({
@@ -60,8 +61,8 @@ export const getMachineTypes = cache(async (): Promise<MachineType[]> => {
   const supabase = await createSupabaseServerComponentClient();
   const { data, error } = await supabase.from('machine_types').select('*').order('label', { ascending: true });
 
-  if (error || !data) {
-    return fallbackTypes;
+  if (error || !data || data.length === 0) {
+    return seedFakeData().machineTypes.length ? seedFakeData().machineTypes : fallbackTypes;
   }
 
   return data.map((item) => ({
@@ -87,8 +88,8 @@ export const getClientMachines = cache(async (clientId: string): Promise<ClientM
     .eq('client_id', clientId)
     .order('created_at', { ascending: false });
 
-  if (error || !data) {
-    return fallbackClientMachines;
+  if (error || !data || data.length === 0) {
+    return seedFakeData().clientMachines.filter((item) => item.clientId === clientId).length ? seedFakeData().clientMachines.filter((item) => item.clientId === clientId) : fallbackClientMachines;
   }
 
   return data.map((item) => {

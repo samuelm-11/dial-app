@@ -4,6 +4,7 @@ import type { Client, ClientFilterInput, ClientHierarchyNode, ClientWithRelation
 import type { Contact } from '@/types/contact';
 import { buildClientHierarchy, filterClients } from '@/features/clients/helpers';
 import { getClientIdsMatchingMachineFilters } from '@/features/machines/queries';
+import { seedFakeData } from '@/lib/fake-data';
 
 function toClientCategoryCode(value: string | null | undefined): Client['category'] {
   const normalized = value?.trim().toLowerCase();
@@ -64,7 +65,7 @@ export const getClients = cache(async (filters: ClientFilterInput = {}): Promise
     .select('*, contracts(id), client_opportunities(id, status), notifications(id, status), client_categories(name), flag_definitions(code)')
     .order('name', { ascending: true });
 
-  const baseClients = error || !Array.isArray(data) ? [] : data.map((row) => mapClientRow(row as Record<string, any>));
+  const baseClients = error || !Array.isArray(data) || data.length === 0 ? seedFakeData().clients : data.map((row) => mapClientRow(row as Record<string, any>));
   const basicFilteredClients = filterClients(baseClients, filters);
 
   const matchingMachineClientIds = await getClientIdsMatchingMachineFilters(filters.machineFilters ?? {});

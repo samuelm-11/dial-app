@@ -2,6 +2,7 @@ import { cache } from 'react';
 import { createSupabaseServerComponentClient } from '@/lib/supabase/server';
 import { opportunityFilterSchema } from '@/features/opportunities/schemas';
 import type { CompetitorCategory, Opportunity, OpportunityFilterInput } from '@/types/opportunity';
+import { seedFakeData } from '@/lib/fake-data';
 
 function toClientFlagCode(value: string | null | undefined): Opportunity['clientFlag'] {
   const normalized = value?.trim().toLowerCase();
@@ -126,7 +127,7 @@ export const getOpportunities = cache(async (filters: OpportunityFilterInput = {
     .select('*, clients(name, postal_code, flag_definitions(code)), machine_categories(name)')
     .order('updated_at', { ascending: false });
 
-  const source = error || !Array.isArray(data) ? [] : data.map((row) => mapOpportunityRow(row as Record<string, any>));
+  const source = error || !Array.isArray(data) || data.length === 0 ? seedFakeData().opportunities : data.map((row) => mapOpportunityRow(row as Record<string, any>));
   return filterOpportunities(source, payload);
 });
 

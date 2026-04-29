@@ -2,6 +2,7 @@ import { cache } from 'react';
 import { createSupabaseServerComponentClient } from '@/lib/supabase/server';
 import { alertFilterSchema } from '@/features/alerts/schemas';
 import type { Alert, AlertDueBucket, AlertFilterInput, AlertStatus } from '@/types/alert';
+import { seedFakeData } from '@/lib/fake-data';
 
 const now = () => new Date();
 
@@ -83,7 +84,7 @@ export const getAlerts = cache(async (filters: AlertFilterInput = {}): Promise<A
     .select('*, clients(name, postal_code), client_machines(machine_types(name))')
     .order('due_date', { ascending: true });
 
-  const source = error || !Array.isArray(data) ? [] : data.map(mapAlertRow);
+  const source = error || !Array.isArray(data) || data.length === 0 ? seedFakeData().alerts : data.map(mapAlertRow);
   return filterAlerts(source, payload);
 });
 
