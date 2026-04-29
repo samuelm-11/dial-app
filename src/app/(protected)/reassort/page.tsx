@@ -33,7 +33,7 @@ const rounds: RestockingRound[] = [
 ];
 
 const statusLabel: Record<RoundStatus, string> = { a_faire: 'à faire', en_cours: 'en cours', termine: 'terminé' };
-const statusTone: Record<RoundStatus, 'default' | 'success' | 'warning' | 'danger'> = { a_faire: 'warning', en_cours: 'default', termine: 'success' };
+const statusTone: Record<RoundStatus, 'neutral' | 'success' | 'warning' | 'danger'> = { a_faire: 'warning', en_cours: 'neutral', termine: 'success' };
 
 export default async function ReassortPage({ searchParams }: { searchParams: Promise<{ employee?: string; status?: RoundStatus }> }) {
   const profile = await requireAuth();
@@ -63,7 +63,7 @@ export default async function ReassortPage({ searchParams }: { searchParams: Pro
               <CardTitle>Réassort / Tournées</CardTitle>
               <CardDescription>Pilotage des tournées de réassort des machines avec suivi du statut.</CardDescription>
             </div>
-            <Badge tone="default" label={isManager ? 'Vue manager' : 'Vue employé'} />
+            <Badge tone="neutral" label={isManager ? 'Vue manager' : 'Vue employé'} />
           </CardHeader>
           {isManager && <form className="grid gap-3 border-t border-muted pt-4 sm:grid-cols-2">
             <label className="text-sm text-slate-700">Employé
