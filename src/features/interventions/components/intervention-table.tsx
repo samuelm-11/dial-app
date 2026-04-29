@@ -59,7 +59,7 @@ export function InterventionTable({ interventions }: { interventions: Interventi
               </td>
               <td className="px-3 py-2 text-slate-700">
                 <p>{intervention.technicianUserLabel ?? '—'}</p>
-                {intervention.technicianName ? <p className="text-xs text-slate-500">Nom libre: {intervention.technicianName}</p> : null}
+                {intervention.technicianName ? <p className="text-xs text-slate-500">Nom saisi: {intervention.technicianName}</p> : null}
               </td>
               <td className="px-3 py-2 text-xs text-slate-700">
                 <p>

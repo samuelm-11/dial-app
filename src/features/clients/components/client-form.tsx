@@ -32,7 +32,7 @@ export function ClientForm({
     defaultValues: {
       category: 'sme',
       flag: 'none',
-      country: 'France',
+      country: 'Belgique',
       ...defaultValues
     }
   });

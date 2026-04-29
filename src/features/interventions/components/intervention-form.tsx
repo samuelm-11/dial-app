@@ -93,7 +93,7 @@ export function InterventionForm({
         </select>
 
         <select className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm" {...register('technicianUserId')}>
-          <option value="">Technicien utilisateur (optionnel)</option>
+          <option value="">Technicien assigné (optionnel)</option>
           {technicians.map((technician) => (
             <option key={technician.id} value={technician.id}>
               {technician.label}
@@ -101,7 +101,7 @@ export function InterventionForm({
           ))}
         </select>
 
-        <input className="w-full rounded border border-slate-300 px-3 py-2 text-sm" placeholder="Nom technicien libre (optionnel)" {...register('technicianName')} />
+        <input className="w-full rounded border border-slate-300 px-3 py-2 text-sm" placeholder="Nom du technicien (optionnel)" {...register('technicianName')} />
 
         <input type="date" className="w-full rounded border border-slate-300 px-3 py-2 text-sm" {...register('interventionDate')} />
         <div className="grid grid-cols-2 gap-2">
