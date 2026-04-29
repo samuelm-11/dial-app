@@ -12,9 +12,9 @@ export function ClientParentSelector({
 }) {
   return (
     <div className="space-y-1">
-      <label className="text-sm font-medium">Client parent</label>
+      <label className="text-sm font-medium">Société mère</label>
       <select className="w-full rounded border border-slate-300 px-3 py-2 text-sm" {...register('parentClientId')}>
-        <option value="">Aucun parent</option>
+        <option value="">{options.length ? 'Aucune société mère' : 'Aucun client parent disponible'}</option>
         {options.map((parent) => (
           <option key={parent.id} value={parent.id}>
             {parent.name}

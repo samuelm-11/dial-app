@@ -27,23 +27,23 @@ const rounds: RestockingRound[] = [
     id: 'TR-2026-001',
     date: '2026-04-29',
     employeeId: 'emp-1',
-    employeeName: 'Nadia K.',
+    employeeName: 'Nicolas K.',
     status: 'en_cours',
     stops: [
       {
         order: 1,
         clientName: 'Clinique Horizon',
         siteName: 'Bâtiment A',
-        address: '14 Rue des Acacias, Lyon',
+        address: '14 Rue de la Station, Seraing',
         machines: ['Distributeur boissons #A12', 'Snacks #S04'],
         categories: ['Boissons fraîches', 'Snacks salés', 'Eaux'],
         status: 'en_cours'
       },
       {
         order: 2,
-        clientName: 'TechnoPark',
+        clientName: 'Liège Logistic Hub',
         siteName: 'Open Space Nord',
-        address: "8 Avenue de l'Industrie, Lyon",
+        address: "8 Rue de l'Industrie, Herstal",
         machines: ['Combo #C22'],
         categories: ['Sandwiches', 'Snacks sucrés', 'Boissons énergétiques'],
         status: 'a_faire'
@@ -54,14 +54,14 @@ const rounds: RestockingRound[] = [
     id: 'TR-2026-002',
     date: '2026-04-29',
     employeeId: 'emp-2',
-    employeeName: 'Thomas R.',
+    employeeName: 'Thierry R.',
     status: 'a_faire',
     stops: [
       {
         order: 1,
-        clientName: 'Centre Delta',
+        clientName: 'Ateliers du Val Saint-Lambert',
         siteName: 'Accueil principal',
-        address: '2 Place des Tilleuls, Villeurbanne',
+        address: '2 Rue du Val, Flémalle',
         machines: ['Eau #W09', 'Snacks #S31'],
         categories: ['Eaux', 'Snacks salés'],
         status: 'a_faire'

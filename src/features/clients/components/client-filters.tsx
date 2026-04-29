@@ -87,7 +87,7 @@ export function ClientFilters({
             defaultChecked={searchParams.get('onlyParents') === '1'}
             onChange={(event) => setBoolean('onlyParents', event.target.checked)}
           />
-          Parents uniquement
+          Clients principaux uniquement
         </label>
 
         <label className="flex items-center gap-2 text-sm text-slate-700">
@@ -96,7 +96,7 @@ export function ClientFilters({
             defaultChecked={searchParams.get('onlySubClients') === '1'}
             onChange={(event) => setBoolean('onlySubClients', event.target.checked)}
           />
-          Sous-clients uniquement
+          Sites / filiales uniquement
         </label>
       </div>
 
@@ -107,7 +107,7 @@ export function ClientFilters({
             defaultChecked={searchParams.get('hasParent') === '1'}
             onChange={(event) => setBoolean('hasParent', event.target.checked)}
           />
-          A un parent
+          Avec société mère
         </label>
         <label className="flex items-center gap-2 text-sm text-slate-700">
           <input
