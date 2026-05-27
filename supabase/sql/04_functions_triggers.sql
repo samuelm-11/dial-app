@@ -33,6 +33,11 @@ begin
     for each row execute function public.set_updated_at();
   end if;
 
+  if not exists (select 1 from pg_trigger where tgname = 'trg_contract_templates_set_updated_at') then
+    create trigger trg_contract_templates_set_updated_at before update on public.contract_templates
+    for each row execute function public.set_updated_at();
+  end if;
+
   if not exists (select 1 from pg_trigger where tgname = 'trg_client_opportunities_set_updated_at') then
     create trigger trg_client_opportunities_set_updated_at before update on public.client_opportunities
     for each row execute function public.set_updated_at();

@@ -7,7 +7,9 @@ const contractBaseSchema = z.object({
   title: z.string().min(2, 'Titre requis.').max(180, 'Titre trop long.'),
   startDate: dateStringSchema,
   endDate: dateStringSchema,
-  autoRenewal: z.boolean().default(false)
+  autoRenewal: z.boolean().default(false),
+  templateId: z.string().uuid('Modèle invalide.').nullable().optional(),
+  generatedContent: z.string().max(50000, 'Contenu trop long.').nullable().optional()
 });
 
 export const contractFormSchema = contractBaseSchema.refine((value) => value.endDate >= value.startDate, {
@@ -33,6 +35,26 @@ export const contractUploadSchema = z.object({
   mimeType: z.string().refine((type) => type === 'application/pdf', 'Seuls les PDF sont autorisés.')
 });
 
+export const contractTemplateSchema = z.object({
+  name: z.string().min(2, 'Nom du modèle requis.').max(160, 'Nom du modèle trop long.'),
+  description: z.string().max(500, 'Description trop longue.').nullable().optional(),
+  content: z.string().min(20, 'Le modèle doit contenir le texte du contrat.').max(50000, 'Modèle trop long.'),
+  isActive: z.boolean().default(true)
+});
+
+export const contractTemplateUpdateSchema = contractTemplateSchema.partial();
+
+export const generateContractSchema = contractBaseSchema
+  .extend({
+    templateId: z.string().uuid('Modèle invalide.')
+  })
+  .refine((value) => value.endDate >= value.startDate, {
+    message: 'La date de fin doit être après la date de début.',
+    path: ['endDate']
+  });
+
 export type ContractFormValues = z.infer<typeof contractFormSchema>;
 export type ContractUpdateValues = z.infer<typeof contractUpdateSchema>;
 export type ContractFilterValues = z.infer<typeof contractFilterSchema>;
+export type ContractTemplateValues = z.infer<typeof contractTemplateSchema>;
+export type GenerateContractValues = z.infer<typeof generateContractSchema>;

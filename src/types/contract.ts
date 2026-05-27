@@ -7,6 +7,8 @@ export type Contract = {
   title: string;
   startDate: string;
   endDate: string;
+  templateId: string | null;
+  generatedContent: string | null;
   privatePdfPath: string | null;
   autoRenewal: boolean;
   notes: string | null;
@@ -37,12 +39,42 @@ export type ContractEndingSoon = {
   daysRemaining: number;
 };
 
+export type ContractTemplate = {
+  id: string;
+  name: string;
+  description: string | null;
+  content: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type CreateContractInput = {
   clientId: string;
   title: string;
   startDate: string;
   endDate: string;
   autoRenewal?: boolean;
+  templateId?: string | null;
+  generatedContent?: string | null;
 };
 
 export type UpdateContractInput = Partial<Omit<CreateContractInput, 'clientId'>>;
+
+export type CreateContractTemplateInput = {
+  name: string;
+  description?: string | null;
+  content: string;
+  isActive?: boolean;
+};
+
+export type UpdateContractTemplateInput = Partial<CreateContractTemplateInput>;
+
+export type GenerateContractInput = {
+  clientId: string;
+  templateId: string;
+  title: string;
+  startDate: string;
+  endDate: string;
+  autoRenewal?: boolean;
+};

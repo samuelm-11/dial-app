@@ -2,7 +2,7 @@ import { cache } from 'react';
 import { createSupabaseServerComponentClient } from '@/lib/supabase/server';
 import { filterContracts, toContractsEndingSoon } from '@/features/contracts/helpers';
 import { contractFilterSchema } from '@/features/contracts/schemas';
-import type { Contract, ContractEndingSoon, ContractFilterInput } from '@/types/contract';
+import type { Contract, ContractEndingSoon, ContractFilterInput, ContractTemplate } from '@/types/contract';
 
 function toClientCategoryCode(value: string | null | undefined): Contract['clientCategory'] {
   const normalized = value?.trim().toLowerCase();
@@ -31,6 +31,8 @@ function mapContractRow(row: any): Contract {
     title: row.title ?? row.pdf_filename ?? 'Contrat',
     startDate: row.start_date,
     endDate: row.end_date,
+    templateId: row.contract_template_id ?? null,
+    generatedContent: row.generated_content ?? null,
     privatePdfPath: row.private_pdf_path ?? row.pdf_path ?? null,
     autoRenewal: Boolean(row.auto_renewal ?? row.auto_renew ?? false),
     notes: row.notes ?? null,
@@ -57,6 +59,18 @@ export const getContracts = cache(async (filters: ContractFilterInput = {}): Pro
   return filterContracts(source, payload);
 });
 
+function mapContractTemplateRow(row: any): ContractTemplate {
+  return {
+    id: row.id,
+    name: row.name,
+    description: row.description ?? null,
+    content: row.content,
+    isActive: Boolean(row.is_active ?? true),
+    createdAt: row.created_at,
+    updatedAt: row.updated_at
+  };
+}
+
 export const getClientContracts = cache(async (clientId: string): Promise<Contract[]> => {
   const contracts = await getContracts({});
   return contracts.filter((contract) => contract.clientId === clientId);
@@ -70,4 +84,16 @@ export const getContractsEndingSoon = cache(async (days: 30 | 90 | 180 = 90): Pr
 export const getClientsWithoutContractPdf = cache(async (): Promise<Contract[]> => {
   const contracts = await getContracts({ hasPdf: false });
   return contracts;
+});
+
+export const getContractTemplates = cache(async ({ includeInactive = false }: { includeInactive?: boolean } = {}): Promise<ContractTemplate[]> => {
+  const supabase = await createSupabaseServerComponentClient();
+  let query = supabase.from('contract_templates').select('*').order('name', { ascending: true });
+
+  if (!includeInactive) {
+    query = query.eq('is_active', true);
+  }
+
+  const { data, error } = await query;
+  return error || !Array.isArray(data) ? [] : data.map(mapContractTemplateRow);
 });
