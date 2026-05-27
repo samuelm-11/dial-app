@@ -9,6 +9,7 @@ const navItems = [
   { href: '/clients', label: 'Clients', icon: '◻' },
   { href: '/opportunities', label: 'Prospection', icon: '◬' },
   { href: '/alerts', label: 'Alertes', icon: '◉' },
+  { href: '/contracts', label: 'Contrats', icon: '▤' },
   { href: '/interventions', label: 'Interventions', icon: '⚒' },
   { href: '/reassort', label: 'Réassort', icon: '◷' },
   { href: '/imports', label: 'Imports', icon: '↥' },

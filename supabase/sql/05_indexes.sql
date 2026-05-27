@@ -5,6 +5,8 @@ create index if not exists idx_client_machines_client_id on public.client_machin
 create index if not exists idx_client_machines_next_filter_change_date on public.client_machines(next_filter_change_date);
 create index if not exists idx_contracts_client_id on public.contracts(client_id);
 create index if not exists idx_contracts_end_date on public.contracts(end_date);
+create index if not exists idx_contracts_template_id on public.contracts(contract_template_id);
+create index if not exists idx_contract_templates_is_active on public.contract_templates(is_active);
 create index if not exists idx_client_opportunities_client_id on public.client_opportunities(client_id);
 create index if not exists idx_notifications_due_date on public.notifications(due_date);
 create index if not exists idx_notifications_is_resolved on public.notifications(is_resolved);

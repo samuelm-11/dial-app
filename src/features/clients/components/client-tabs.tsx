@@ -10,7 +10,7 @@ import { ClientContractsTab } from '@/features/clients/components/client-contrac
 import { ClientOpportunitiesTab } from '@/features/clients/components/client-opportunities-tab';
 import { ClientAlertsTab } from '@/features/clients/components/client-alerts-tab';
 import { ClientNotesTab } from '@/features/clients/components/client-notes-tab';
-import type { Contract } from '@/types/contract';
+import type { Contract, ContractTemplate } from '@/types/contract';
 import type { Opportunity } from '@/types/opportunity';
 import type { Alert } from '@/types/alert';
 
@@ -22,6 +22,7 @@ export function ClientTabs({
   clientMachines,
   machineTypes,
   contracts,
+  contractTemplates,
   opportunities,
   machineCategoryOptions,
   alerts
@@ -30,6 +31,7 @@ export function ClientTabs({
   clientMachines: ClientMachine[];
   machineTypes: MachineType[];
   contracts: Contract[];
+  contractTemplates: ContractTemplate[];
   opportunities: Opportunity[];
   machineCategoryOptions: Array<{ id: string; label: string }>;
   alerts: Alert[];
@@ -55,7 +57,7 @@ export function ClientTabs({
       {activeTab === 'Parc machines' ? (
         <ClientMachinesTab clientId={client.id} initialMachines={clientMachines} machineTypes={machineTypes} />
       ) : null}
-      {activeTab === 'Contrats' ? <ClientContractsTab clientId={client.id} contracts={contracts} /> : null}
+      {activeTab === 'Contrats' ? <ClientContractsTab client={client} contracts={contracts} templates={contractTemplates} /> : null}
       {activeTab === 'Prospection' ? (
         <ClientOpportunitiesTab clientId={client.id} opportunities={opportunities} machineCategoryOptions={machineCategoryOptions} />
       ) : null}

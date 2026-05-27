@@ -33,16 +33,36 @@ create table if not exists public.client_machines (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists public.contract_templates (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  description text,
+  content text not null,
+  is_active boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
 create table if not exists public.contracts (
   id uuid primary key default gen_random_uuid(),
   client_id uuid not null references public.clients(id) on delete cascade,
   title text not null,
   start_date date not null,
   end_date date not null,
+  contract_template_id uuid references public.contract_templates(id) on delete set null,
+  generated_content text,
   private_pdf_path text,
+  auto_renewal boolean not null default false,
+  notes text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table if exists public.contracts
+  add column if not exists contract_template_id uuid references public.contract_templates(id) on delete set null,
+  add column if not exists generated_content text,
+  add column if not exists auto_renewal boolean not null default false,
+  add column if not exists notes text;
 
 create table if not exists public.client_opportunities (
   id uuid primary key default gen_random_uuid(),
