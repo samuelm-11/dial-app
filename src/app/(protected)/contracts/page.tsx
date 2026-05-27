@@ -22,8 +22,8 @@ export default async function ContractsPage({
           <Link href="/contracts/modeles" className="inline-flex items-center justify-center rounded-xl border border-muted bg-white px-4 py-2.5 text-sm font-medium text-primary hover:bg-slate-50">
             Modèles de contrat
           </Link>
-          <Link href="/clients" className="inline-flex items-center justify-center rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-secondary">
-            Générer depuis une fiche client
+          <Link href="/contracts/generer" className="inline-flex items-center justify-center rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-secondary">
+            Générer un contrat
           </Link>
         </div>
         <ContractFilters />

@@ -77,4 +77,10 @@ export type GenerateContractInput = {
   startDate: string;
   endDate: string;
   autoRenewal?: boolean;
+  serviceLevel: string;
+  monthlyFee: string;
+  billingFrequency: string;
+  paymentTerms: string;
+  contractDuration: string;
+  specialConditions?: string | null;
 };

@@ -46,7 +46,13 @@ export const contractTemplateUpdateSchema = contractTemplateSchema.partial();
 
 export const generateContractSchema = contractBaseSchema
   .extend({
-    templateId: z.string().uuid('Modèle invalide.')
+    templateId: z.string().uuid('Modèle invalide.'),
+    serviceLevel: z.string().min(2, 'Formule de service requise.').max(180, 'Formule trop longue.'),
+    monthlyFee: z.string().min(1, 'Montant requis.').max(80, 'Montant trop long.'),
+    billingFrequency: z.string().min(2, 'Fréquence de facturation requise.').max(120, 'Fréquence trop longue.'),
+    paymentTerms: z.string().min(2, 'Conditions de paiement requises.').max(160, 'Conditions trop longues.'),
+    contractDuration: z.string().min(2, 'Durée requise.').max(120, 'Durée trop longue.'),
+    specialConditions: z.string().max(2000, 'Conditions particulières trop longues.').nullable().optional()
   })
   .refine((value) => value.endDate >= value.startDate, {
     message: 'La date de fin doit être après la date de début.',

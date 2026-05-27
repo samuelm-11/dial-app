@@ -26,7 +26,7 @@ insert into public.contract_templates (name, description, content, is_active)
 select
   'Contrat de service vending',
   'Modèle type pour client ou site en région liégeoise.',
-  'CONTRAT DE SERVICE
+  'CONTRAT DE SERVICE DIAL
 
 Entre Dial, prestataire de distribution automatique en région liégeoise,
 et {{client.nom}}, situé {{client.adresse}}, {{client.code_postal}} {{client.ville}}, {{client.pays}}.
@@ -35,7 +35,21 @@ Contact principal: {{contact.nom}}
 Email: {{contact.email}}
 Téléphone: {{contact.telephone}}
 
+1. Objet
+Dial assure la mise à disposition, le réassort et le suivi opérationnel des distributeurs automatiques installés chez le client.
+
+2. Conditions commerciales
+Formule de service: {{contrat.formule}}
+Montant mensuel: {{contrat.montant_mensuel}}
+Facturation: {{contrat.facturation}}
+Paiement: {{contrat.paiement}}
+Durée: {{contrat.duree}}
+
+3. Période contractuelle
 Le présent contrat prend effet le {{contrat.date_debut}} et se termine le {{contrat.date_fin}}.
+
+4. Conditions particulières
+{{contrat.conditions_particulieres}}
 
 Fait à Liège, le {{date}}.',
   true

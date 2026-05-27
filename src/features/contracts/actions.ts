@@ -44,6 +44,7 @@ export async function createContract(input: CreateContractInput) {
   }
 
   revalidatePath('/contracts');
+  revalidatePath('/contracts/generer');
   revalidatePath(`/clients/${payload.clientId}`);
 }
 
@@ -117,7 +118,15 @@ export async function generateContractFromTemplate(input: GenerateContractInput)
     generatedContent: renderContractTemplate(String(template.content ?? ''), {
       client,
       startDate: payload.startDate,
-      endDate: payload.endDate
+      endDate: payload.endDate,
+      details: {
+        serviceLevel: payload.serviceLevel,
+        monthlyFee: payload.monthlyFee,
+        billingFrequency: payload.billingFrequency,
+        paymentTerms: payload.paymentTerms,
+        contractDuration: payload.contractDuration,
+        specialConditions: payload.specialConditions
+      }
     })
   });
 }
