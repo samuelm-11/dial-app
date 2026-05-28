@@ -7,7 +7,6 @@ const aliases: Record<string, string[]> = {
   postalCode: ['postal', 'postal_code', 'code postal', 'cp'],
   country: ['country', 'pays'],
   address: ['address', 'adresse'],
-  parentClientName: ['parent', 'client parent', 'parent client'],
   category: ['category', 'categorie'],
   flag: ['flag', 'status_flag'],
   clientName: ['client', 'client_name', 'nom client'],

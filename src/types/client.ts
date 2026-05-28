@@ -7,7 +7,6 @@ export type ClientCategoryCode = 'enterprise' | 'sme' | 'public' | 'franchise' |
 export type Client = {
   id: string;
   name: string;
-  parentClientId: string | null;
   category: ClientCategoryCode;
   flag: ClientFlagCode;
   address: string;
@@ -25,16 +24,7 @@ export type Client = {
 };
 
 export type ClientWithRelations = Client & {
-  parent?: Pick<Client, 'id' | 'name'> | null;
-  subClients: Array<Pick<Client, 'id' | 'name' | 'city' | 'flag'>>;
   contacts: Contact[];
-};
-
-export type ClientHierarchyNode = Pick<
-  Client,
-  'id' | 'name' | 'city' | 'category' | 'flag' | 'parentClientId' | 'hasContract' | 'openOpportunities' | 'openAlerts'
-> & {
-  children: ClientHierarchyNode[];
 };
 
 export type ClientFilterInput = {
@@ -43,9 +33,6 @@ export type ClientFilterInput = {
   city?: string;
   categories?: ClientCategoryCode[];
   flags?: ClientFlagCode[];
-  onlyParents?: boolean;
-  onlySubClients?: boolean;
-  hasParent?: boolean;
   hasContract?: boolean;
   hasOpenOpportunities?: boolean;
   hasOpenAlerts?: boolean;
@@ -61,7 +48,6 @@ export type ClientFilterInput = {
 
 export type CreateClientInput = {
   name: string;
-  parentClientId?: string | null;
   category: ClientCategoryCode;
   flag: ClientFlagCode;
   address: string;

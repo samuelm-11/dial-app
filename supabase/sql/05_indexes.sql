@@ -1,4 +1,3 @@
-create index if not exists idx_clients_parent_client_id on public.clients(parent_client_id);
 create index if not exists idx_clients_category on public.clients(client_category_id);
 create index if not exists idx_client_contacts_client_id on public.client_contacts(client_id);
 create index if not exists idx_client_machines_client_id on public.client_machines(client_id);

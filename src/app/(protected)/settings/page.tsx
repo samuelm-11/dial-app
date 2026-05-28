@@ -6,7 +6,7 @@ const settingsLinks = [
   {
     href: '/settings/client-categories',
     title: 'Catégories client',
-    description: 'Structure des segments client (parents / sous-clients).'
+    description: 'Structure des segments et typologies client.'
   },
   {
     href: '/settings/flags',

@@ -7,7 +7,6 @@ const clientRowSchema = z.object({
   postalCode: z.string().optional(),
   country: z.string().optional(),
   address: z.string().optional(),
-  parentClientName: z.string().optional(),
   category: z.string().optional(),
   flag: z.string().optional()
 });
@@ -43,7 +42,6 @@ export const fieldSets: Record<ImportEntity, Array<{ key: string; label: string;
     { key: 'postalCode', label: 'Code postal' },
     { key: 'country', label: 'Pays' },
     { key: 'address', label: 'Adresse' },
-    { key: 'parentClientName', label: 'Client parent' },
     { key: 'category', label: 'Catégorie client' },
     { key: 'flag', label: 'Flag client' }
   ],

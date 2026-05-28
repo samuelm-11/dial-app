@@ -131,7 +131,7 @@ export function ImportWorkflow() {
       </div>
 
       <div className="rounded border border-dashed border-slate-300 bg-slate-50 p-3 text-xs text-slate-600">
-        Placeholder propre: gestion avancée des relations parent/enfant par identifiants externes et des pièces PDF privées sera finalisée à l'étape dédiée.
+        Placeholder propre: la gestion avancée des pièces PDF privées sera finalisée à l'étape dédiée.
       </div>
     </div>
   );

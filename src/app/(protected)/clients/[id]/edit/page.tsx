@@ -1,11 +1,11 @@
 import { notFound } from 'next/navigation';
 import { PageContainer } from '@/components/layout/page-container';
 import { ClientForm } from '@/features/clients/components/client-form';
-import { getClientById, getClientParentOptions } from '@/features/clients/queries';
+import { getClientById } from '@/features/clients/queries';
 
 export default async function EditClientPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [client, parentOptions] = await Promise.all([getClientById(id), getClientParentOptions()]);
+  const client = await getClientById(id);
 
   if (!client) {
     notFound();
@@ -16,10 +16,8 @@ export default async function EditClientPage({ params }: { params: Promise<{ id:
       <ClientForm
         mode="edit"
         clientId={client.id}
-        parentOptions={parentOptions.filter((option) => option.id !== client.id)}
         defaultValues={{
           name: client.name,
-          parentClientId: client.parentClientId,
           category: client.category,
           flag: client.flag,
           address: client.address,

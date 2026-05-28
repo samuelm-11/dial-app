@@ -1,8 +1,8 @@
 import { cache } from 'react';
 import { createSupabaseServerComponentClient } from '@/lib/supabase/server';
-import type { Client, ClientFilterInput, ClientHierarchyNode, ClientWithRelations } from '@/types/client';
+import type { Client, ClientFilterInput, ClientWithRelations } from '@/types/client';
 import type { Contact } from '@/types/contact';
-import { buildClientHierarchy, filterClients } from '@/features/clients/helpers';
+import { filterClients } from '@/features/clients/helpers';
 import { getClientIdsMatchingMachineFilters } from '@/features/machines/queries';
 
 function toClientCategoryCode(value: string | null | undefined): Client['category'] {
@@ -39,7 +39,6 @@ function mapClientRow(row: Record<string, any>): Client {
   return {
     id: row.id,
     name: row.name ?? 'Client sans nom',
-    parentClientId: row.parent_client_id ?? row.parentClientId ?? null,
     category: toClientCategoryCode(category?.name ?? row.category),
     flag: toClientFlagCode(flag?.code ?? row.flag),
     address: [row.address_line_1, row.address_line_2].filter(Boolean).join(', '),
@@ -75,11 +74,6 @@ export const getClients = cache(async (filters: ClientFilterInput = {}): Promise
   return basicFilteredClients.filter((client) => matchingMachineClientIds.has(client.id));
 });
 
-export const getClientHierarchy = cache(async (filters: ClientFilterInput = {}): Promise<ClientHierarchyNode[]> => {
-  const clients = await getClients(filters);
-  return buildClientHierarchy(clients);
-});
-
 export const getClientById = cache(async (id: string): Promise<ClientWithRelations | null> => {
   const [clients, supabase] = await Promise.all([getClients({}), createSupabaseServerComponentClient()]);
   const current = clients.find((item) => item.id === id);
@@ -87,11 +81,6 @@ export const getClientById = cache(async (id: string): Promise<ClientWithRelatio
   if (!current) {
     return null;
   }
-
-  const parent = clients.find((item) => item.id === current.parentClientId);
-  const subClients = clients
-    .filter((item) => item.parentClientId === current.id)
-    .map((item) => ({ id: item.id, name: item.name, city: item.city, flag: item.flag }));
 
   const { data: contactsRows, error } = await supabase
     .from('client_contacts')
@@ -119,13 +108,11 @@ export const getClientById = cache(async (id: string): Promise<ClientWithRelatio
 
   return {
     ...current,
-    parent: parent ? { id: parent.id, name: parent.name } : null,
-    subClients,
     contacts
   };
 });
 
-export const getClientParentOptions = cache(async (): Promise<Array<{ id: string; name: string }>> => {
+export const getClientOptions = cache(async (): Promise<Array<{ id: string; name: string }>> => {
   const clients = await getClients({});
   return clients.map((client) => ({ id: client.id, name: client.name }));
 });

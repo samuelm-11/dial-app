@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { PageContainer } from '@/components/layout/page-container';
-import { getClientParentOptions } from '@/features/clients/queries';
+import { getClientOptions } from '@/features/clients/queries';
 import { getMachineCategories } from '@/features/machines/queries';
 import { OpportunityFilters } from '@/features/opportunities/components/opportunity-filters';
 import { OpportunityTable } from '@/features/opportunities/components/opportunity-table';
@@ -14,7 +14,7 @@ export default async function OpportunitiesPage({
 }) {
   const resolvedSearchParams = await searchParams;
   const filters = getOpportunityFiltersFromSearchParams(resolvedSearchParams);
-  const [opportunities, clients, machineCategories] = await Promise.all([getOpportunities(filters), getClientParentOptions(), getMachineCategories()]);
+  const [opportunities, clients, machineCategories] = await Promise.all([getOpportunities(filters), getClientOptions(), getMachineCategories()]);
   const safeOpportunities = Array.isArray(opportunities) ? opportunities : [];
   const safeClients = Array.isArray(clients) ? clients : [];
   const safeMachineCategories = Array.isArray(machineCategories) ? machineCategories : [];
