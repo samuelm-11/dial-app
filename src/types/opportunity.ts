@@ -17,8 +17,16 @@ export type CompetitorCategory = (typeof competitorCategoryValues)[number];
 
 export type Opportunity = {
   id: string;
-  clientId: string;
-  clientName: string;
+  clientId: string | null;
+  clientName: string | null;
+  prospectName: string;
+  prospectContactName: string | null;
+  prospectEmail: string | null;
+  prospectPhone: string | null;
+  prospectAddress: string | null;
+  prospectPostalCode: string | null;
+  prospectCity: string | null;
+  prospectCountry: string | null;
   title: string;
   description: string | null;
   linkedMachineCategoryId: string | null;
@@ -42,6 +50,7 @@ export type Opportunity = {
 };
 
 export type OpportunityFilterInput = {
+  query?: string;
   statuses?: OpportunityStatus[];
   priorities?: OpportunityPriority[];
   linkedMachineCategoryIds?: string[];
@@ -55,7 +64,15 @@ export type OpportunityFilterInput = {
 };
 
 export type CreateOpportunityInput = {
-  clientId: string;
+  clientId?: string | null;
+  prospectName: string;
+  prospectContactName?: string | null;
+  prospectEmail?: string | null;
+  prospectPhone?: string | null;
+  prospectAddress?: string | null;
+  prospectPostalCode?: string | null;
+  prospectCity?: string | null;
+  prospectCountry?: string | null;
   title: string;
   description?: string | null;
   linkedMachineCategoryId?: string | null;

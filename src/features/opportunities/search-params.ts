@@ -17,6 +17,7 @@ export function getOpportunityFiltersFromSearchParams(searchParams: Record<strin
   const flag = asString(searchParams.flag);
 
   return {
+    query: asString(searchParams.q),
     statuses: status ? [status as OpportunityStatus] : undefined,
     priorities: priority ? [priority as OpportunityPriority] : undefined,
     linkedMachineCategoryIds: machineCategoryId ? [machineCategoryId] : undefined,

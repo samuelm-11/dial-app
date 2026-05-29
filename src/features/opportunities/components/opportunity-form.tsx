@@ -27,17 +27,15 @@ const competitorCategoryLabels: Record<CompetitorCategory, string> = {
   other: 'Autre'
 };
 
-type ClientOption = { id: string; label: string };
-
 export function OpportunityForm({
   clientId,
-  clientOptions,
+  clientName,
   opportunity,
   machineCategoryOptions,
   onDone
 }: {
   clientId?: string;
-  clientOptions?: ClientOption[];
+  clientName?: string;
   machineCategoryOptions: Array<{ id: string; label: string }>;
   opportunity?: Opportunity;
   onDone?: () => void;
@@ -45,7 +43,6 @@ export function OpportunityForm({
   const [isPending, startTransition] = useTransition();
   const [machineCategoryKey, setMachineCategoryKey] = useState<string>('');
   const [machineCategoryValue, setMachineCategoryValue] = useState<string>('0');
-  const defaultClientId = clientId ?? clientOptions?.[0]?.id ?? '';
 
   const {
     register,
@@ -59,6 +56,14 @@ export function OpportunityForm({
     defaultValues: opportunity
       ? {
           clientId: opportunity.clientId,
+          prospectName: opportunity.prospectName,
+          prospectContactName: opportunity.prospectContactName,
+          prospectEmail: opportunity.prospectEmail,
+          prospectPhone: opportunity.prospectPhone,
+          prospectAddress: opportunity.prospectAddress,
+          prospectPostalCode: opportunity.prospectPostalCode,
+          prospectCity: opportunity.prospectCity,
+          prospectCountry: opportunity.prospectCountry,
           title: opportunity.title,
           description: opportunity.description,
           linkedMachineCategoryId: opportunity.linkedMachineCategoryId,
@@ -76,7 +81,9 @@ export function OpportunityForm({
           notes: opportunity.notes
         }
       : {
-          clientId: defaultClientId,
+          clientId: clientId ?? null,
+          prospectName: clientName ?? '',
+          prospectCountry: 'Belgique',
           status: 'open',
           priority: 'medium',
           machineCountsByCategory: {}
@@ -97,11 +104,19 @@ export function OpportunityForm({
       };
 
       if (opportunity) {
-        await updateOpportunity(opportunity.clientId, opportunity.id, cleanValues);
+        await updateOpportunity(opportunity.id, cleanValues);
       } else {
         await createOpportunity(cleanValues);
         reset({
-          clientId: values.clientId,
+          clientId: clientId ?? null,
+          prospectName: clientName ?? '',
+          prospectContactName: '',
+          prospectEmail: '',
+          prospectPhone: '',
+          prospectAddress: '',
+          prospectPostalCode: '',
+          prospectCity: '',
+          prospectCountry: 'Belgique',
           title: '',
           description: '',
           linkedMachineCategoryId: null,
@@ -153,20 +168,59 @@ export function OpportunityForm({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 rounded border border-slate-200 bg-slate-50 p-4">
+      {clientId ? <input type="hidden" {...register('clientId')} /> : null}
+
+      <section className="space-y-3">
+        <h4 className="text-sm font-semibold text-slate-900">Prospect</h4>
+        <div className="grid gap-3 md:grid-cols-2">
+          <input
+            className="rounded border border-slate-300 px-3 py-2 text-sm md:col-span-2"
+            placeholder="Nom du prospect / société"
+            {...register('prospectName')}
+          />
+          <input
+            className="rounded border border-slate-300 px-3 py-2 text-sm"
+            placeholder="Contact"
+            {...register('prospectContactName')}
+          />
+          <input
+            className="rounded border border-slate-300 px-3 py-2 text-sm"
+            placeholder="Email"
+            {...register('prospectEmail')}
+          />
+          <input
+            className="rounded border border-slate-300 px-3 py-2 text-sm"
+            placeholder="Téléphone"
+            {...register('prospectPhone')}
+          />
+          <input
+            className="rounded border border-slate-300 px-3 py-2 text-sm"
+            placeholder="Code postal"
+            {...register('prospectPostalCode')}
+          />
+          <input
+            className="rounded border border-slate-300 px-3 py-2 text-sm"
+            placeholder="Ville"
+            {...register('prospectCity')}
+          />
+          <input
+            className="rounded border border-slate-300 px-3 py-2 text-sm"
+            placeholder="Pays"
+            {...register('prospectCountry')}
+          />
+          <input
+            className="rounded border border-slate-300 px-3 py-2 text-sm md:col-span-2"
+            placeholder="Adresse"
+            {...register('prospectAddress')}
+          />
+        </div>
+        {errors.prospectName?.message ? <p className="text-xs text-rose-600">{errors.prospectName.message}</p> : null}
+        {errors.prospectEmail?.message ? <p className="text-xs text-rose-600">{errors.prospectEmail.message}</p> : null}
+      </section>
+
       <section className="space-y-3">
         <h4 className="text-sm font-semibold text-slate-900">Informations générales</h4>
         <div className="grid gap-3 md:grid-cols-2">
-          {!opportunity && !clientId ? (
-            <select className="w-full rounded border border-slate-300 px-3 py-2 text-sm md:col-span-2" {...register('clientId')}>
-              <option value="">Sélectionner un client</option>
-              {(clientOptions ?? []).map((clientOption) => (
-                <option key={clientOption.id} value={clientOption.id}>
-                  {clientOption.label}
-                </option>
-              ))}
-            </select>
-          ) : null}
-
           <input className="rounded border border-slate-300 px-3 py-2 text-sm md:col-span-2" placeholder="Titre de la prospection" {...register('title')} />
           <textarea className="rounded border border-slate-300 px-3 py-2 text-sm md:col-span-2" rows={3} placeholder="Description" {...register('description')} />
 

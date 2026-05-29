@@ -62,11 +62,11 @@ export async function getInterventionFormOptions() {
   ]);
 
   const clients = Array.isArray(clientsRes.data)
-    ? clientsRes.data.map((item) => ({ id: item.id as string, name: item.name as string }))
+    ? (clientsRes.data as Array<Record<string, unknown>>).map((item) => ({ id: item.id as string, name: item.name as string }))
     : [];
 
   const machines = Array.isArray(machinesRes.data)
-    ? machinesRes.data.map((item) => {
+    ? (machinesRes.data as Array<Record<string, any>>).map((item) => {
         const client = Array.isArray(item.clients) ? item.clients[0] : item.clients;
         const machineType = Array.isArray(item.machine_types) ? item.machine_types[0] : item.machine_types;
 
@@ -79,7 +79,7 @@ export async function getInterventionFormOptions() {
     : [];
 
   const technicians = Array.isArray(techniciansRes.data)
-    ? techniciansRes.data.map((item) => ({
+    ? (techniciansRes.data as Array<Record<string, unknown>>).map((item) => ({
         id: item.id as string,
         label: (item.full_name as string | null) ?? (item.email as string)
       }))

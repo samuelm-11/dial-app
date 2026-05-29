@@ -9,7 +9,7 @@ async function updateAlertStatus(id: string, status: 'done' | 'dismissed') {
   const supabase = await createSupabaseServerActionClient();
 
   const { error } = await supabase
-    .from('alerts')
+    .from('notifications')
     .update({ status: payload.status } as never)
     .eq('id', payload.id);
 

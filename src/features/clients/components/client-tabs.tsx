@@ -59,7 +59,7 @@ export function ClientTabs({
       ) : null}
       {activeTab === 'Contrats' ? <ClientContractsTab client={client} contracts={contracts} templates={contractTemplates} /> : null}
       {activeTab === 'Prospection' ? (
-        <ClientOpportunitiesTab clientId={client.id} opportunities={opportunities} machineCategoryOptions={machineCategoryOptions} />
+        <ClientOpportunitiesTab clientId={client.id} clientName={client.name} opportunities={opportunities} machineCategoryOptions={machineCategoryOptions} />
       ) : null}
       {activeTab === 'Alertes' ? <ClientAlertsTab alerts={alerts} /> : null}
       {activeTab === 'Notes' ? <ClientNotesTab client={client} /> : null}

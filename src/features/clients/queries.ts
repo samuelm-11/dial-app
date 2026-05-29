@@ -33,15 +33,12 @@ function mapClientRow(row: Record<string, any>): Client {
   const contracts = Array.isArray(row.contracts) ? row.contracts : [];
   const opportunities = Array.isArray(row.client_opportunities) ? row.client_opportunities : [];
   const notifications = Array.isArray(row.notifications) ? row.notifications : [];
-  const category = Array.isArray(row.client_categories) ? row.client_categories[0] : row.client_categories;
-  const flag = Array.isArray(row.flag_definitions) ? row.flag_definitions[0] : row.flag_definitions;
-
   return {
     id: row.id,
     name: row.name ?? 'Client sans nom',
-    category: toClientCategoryCode(category?.name ?? row.category),
-    flag: toClientFlagCode(flag?.code ?? row.flag),
-    address: [row.address_line_1, row.address_line_2].filter(Boolean).join(', '),
+    category: toClientCategoryCode(row.category),
+    flag: toClientFlagCode(row.flag),
+    address: row.address ?? [row.address_line_1, row.address_line_2].filter(Boolean).join(', '),
     postalCode: row.postal_code ?? row.postalCode ?? '',
     city: row.city ?? '',
     country: row.country ?? '',
@@ -60,7 +57,7 @@ export const getClients = cache(async (filters: ClientFilterInput = {}): Promise
   const supabase = await createSupabaseServerComponentClient();
   const { data, error } = await supabase
     .from('clients')
-    .select('*, contracts(id), client_opportunities(id, status), notifications(id, status), client_categories(name), flag_definitions(code)')
+    .select('*, contracts(id), client_opportunities(id, status), notifications(id, status)')
     .order('name', { ascending: true });
 
   const baseClients = error || !Array.isArray(data) ? [] : data.map((row) => mapClientRow(row as Record<string, any>));
@@ -76,33 +73,32 @@ export const getClients = cache(async (filters: ClientFilterInput = {}): Promise
 
 export const getClientById = cache(async (id: string): Promise<ClientWithRelations | null> => {
   const [clients, supabase] = await Promise.all([getClients({}), createSupabaseServerComponentClient()]);
-  const current = clients.find((item) => item.id === id);
+  const current = clients.find((item: Client) => item.id === id);
 
   if (!current) {
     return null;
   }
 
   const { data: contactsRows, error } = await supabase
-    .from('client_contacts')
-    .select('id, client_id, full_name, role, email, phone, is_primary, created_at')
+    .from('contacts')
+    .select('id, client_id, first_name, last_name, role, email, phone, is_primary, created_at, updated_at')
     .eq('client_id', current.id)
     .order('is_primary', { ascending: false });
 
   const contacts: Contact[] = error || !Array.isArray(contactsRows)
     ? []
     : contactsRows.map((row) => {
-        const [firstName, ...lastNameParts] = String(row.full_name ?? '').trim().split(/\s+/).filter(Boolean);
         return {
           id: row.id,
           clientId: row.client_id,
-          firstName: firstName || 'Contact',
-          lastName: lastNameParts.join(' ') || 'Sans nom',
+          firstName: row.first_name || 'Contact',
+          lastName: row.last_name || 'Sans nom',
           email: row.email ?? null,
           phone: row.phone ?? null,
           role: toContactRole(row.role),
           isPrimary: Boolean(row.is_primary),
           createdAt: row.created_at ?? new Date().toISOString(),
-          updatedAt: row.created_at ?? new Date().toISOString()
+          updatedAt: row.updated_at ?? row.created_at ?? new Date().toISOString()
         };
       });
 
