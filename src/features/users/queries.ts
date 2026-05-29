@@ -28,7 +28,7 @@ export const getUsers = cache(async (): Promise<UserListItem[]> => {
     return fallbackUsers;
   }
 
-  return data.map((user) => ({
+  return (data as Array<Record<string, any>>).map((user) => ({
     id: user.id,
     fullName: user.full_name,
     email: user.email,

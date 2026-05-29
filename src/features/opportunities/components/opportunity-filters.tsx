@@ -1,9 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { clientFlagLabels } from '@/features/clients/helpers';
 import { opportunityPriorityValues, opportunityStatusValues } from '@/features/opportunities/schemas';
-import type { ClientFlagCode } from '@/types/client';
 import type { OpportunityPriority, OpportunityStatus } from '@/types/opportunity';
 
 const priorityLabels: Record<OpportunityPriority, string> = {
@@ -21,10 +19,8 @@ const statusLabels: Record<OpportunityStatus, string> = {
 };
 
 export function OpportunityFilters({
-  clients,
   machineCategories
 }: {
-  clients: Array<{ id: string; name: string }>;
   machineCategories: Array<{ id: string; label: string }>;
 }) {
   const router = useRouter();
@@ -43,6 +39,13 @@ export function OpportunityFilters({
   return (
     <div className="space-y-4 rounded border border-slate-200 bg-slate-50 p-4">
       <div className="grid gap-3 md:grid-cols-4">
+        <input
+          className="rounded border border-slate-300 px-3 py-2 text-sm"
+          placeholder="Prospect, contact, email"
+          defaultValue={searchParams.get('q') ?? ''}
+          onBlur={(event) => setParam('q', event.target.value)}
+        />
+
         <select className="rounded border border-slate-300 px-3 py-2 text-sm" defaultValue={searchParams.get('status') ?? ''} onChange={(event) => setParam('status', event.target.value)}>
           <option value="">Tous statuts</option>
           {opportunityStatusValues.map((status) => (
@@ -69,28 +72,10 @@ export function OpportunityFilters({
             </option>
           ))}
         </select>
-
-        <select className="rounded border border-slate-300 px-3 py-2 text-sm" defaultValue={searchParams.get('clientId') ?? ''} onChange={(event) => setParam('clientId', event.target.value)}>
-          <option value="">Tous clients</option>
-          {clients.map((client) => (
-            <option key={client.id} value={client.id}>
-              {client.name}
-            </option>
-          ))}
-        </select>
       </div>
 
       <div className="grid gap-3 md:grid-cols-4">
         <input className="rounded border border-slate-300 px-3 py-2 text-sm" placeholder="Code postal" defaultValue={searchParams.get('postalCode') ?? ''} onBlur={(event) => setParam('postalCode', event.target.value)} />
-
-        <select className="rounded border border-slate-300 px-3 py-2 text-sm" defaultValue={searchParams.get('flag') ?? ''} onChange={(event) => setParam('flag', event.target.value)}>
-          <option value="">Tous flags client</option>
-          {(Object.keys(clientFlagLabels) as ClientFlagCode[]).map((flag) => (
-            <option key={flag} value={flag}>
-              {clientFlagLabels[flag]}
-            </option>
-          ))}
-        </select>
 
         <input
           type="number"

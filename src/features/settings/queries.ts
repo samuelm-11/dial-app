@@ -60,7 +60,7 @@ export const getClientCategories = cache(async (): Promise<ClientCategorySetting
     return fallbackClientCategories;
   }
 
-  return data.map((item) => ({
+  return (data as Array<Record<string, any>>).map((item) => ({
     id: item.id,
     code: item.code,
     label: item.label,
@@ -78,7 +78,7 @@ export const getFlags = cache(async (): Promise<FlagSetting[]> => {
     return fallbackFlags;
   }
 
-  return data.map((item) => ({
+  return (data as Array<Record<string, any>>).map((item) => ({
     id: item.id,
     code: item.code,
     label: item.label,
@@ -97,7 +97,7 @@ export const getMachineCategories = cache(async (): Promise<MachineCategorySetti
     return fallbackMachineCategories;
   }
 
-  return data.map((item) => ({
+  return (data as Array<Record<string, any>>).map((item) => ({
     id: item.id,
     code: item.code,
     label: item.label,
@@ -115,7 +115,7 @@ export const getMachineTypes = cache(async (): Promise<MachineTypeSetting[]> => 
     return fallbackMachineTypes;
   }
 
-  return data.map((item) => ({
+  return (data as Array<Record<string, any>>).map((item) => ({
     id: item.id,
     machineCategoryId: item.machine_category_id,
     code: item.code,
@@ -136,7 +136,7 @@ export const getNotificationRules = cache(async (): Promise<NotificationRuleSett
     return fallbackNotificationRules;
   }
 
-  return data.map((item) => ({
+  return (data as Array<Record<string, any>>).map((item) => ({
     id: item.id,
     code: item.code,
     label: item.label,

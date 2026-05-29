@@ -11,6 +11,18 @@ const emptyToUndefined = (value: unknown) => {
   return value;
 };
 
+const emptyToNull = (value: unknown) => {
+  if (value === '' || value === undefined) {
+    return null;
+  }
+  return value;
+};
+
+const nullableTextSchema = (max: number, message: string) =>
+  z.preprocess(emptyToNull, z.string().max(max, message).nullable().optional());
+
+const nullableUuidSchema = z.preprocess(emptyToNull, z.string().uuid('Identifiant invalide.').nullable().optional());
+
 const nullableNumberSchema = z.preprocess(
   emptyToUndefined,
   z.coerce.number().nonnegative('La valeur doit être positive.').optional()
@@ -22,10 +34,18 @@ const machineCountsByCategorySchema = z
   .default({});
 
 export const opportunityFormSchema = z.object({
-  clientId: z.string().uuid('Client invalide.'),
+  clientId: nullableUuidSchema,
+  prospectName: z.string().min(2, 'Nom du prospect requis.').max(180, 'Nom du prospect trop long.'),
+  prospectContactName: nullableTextSchema(180, 'Nom du contact trop long.'),
+  prospectEmail: z.preprocess(emptyToNull, z.string().email('Email invalide.').nullable().optional()),
+  prospectPhone: nullableTextSchema(80, 'Téléphone trop long.'),
+  prospectAddress: nullableTextSchema(240, 'Adresse trop longue.'),
+  prospectPostalCode: nullableTextSchema(20, 'Code postal trop long.'),
+  prospectCity: nullableTextSchema(120, 'Ville trop longue.'),
+  prospectCountry: nullableTextSchema(120, 'Pays trop long.'),
   title: z.string().min(2, 'Titre requis.').max(180, 'Titre trop long.'),
   description: z.string().max(1200, 'Description trop longue.').optional().nullable(),
-  linkedMachineCategoryId: z.string().uuid('Catégorie machine invalide.').optional().nullable(),
+  linkedMachineCategoryId: nullableUuidSchema,
   priority: z.enum(opportunityPriorityValues),
   status: z.enum(opportunityStatusValues).default('open'),
   estimatedValue: nullableNumberSchema.nullable(),
@@ -48,6 +68,7 @@ export const opportunityUpdateSchema = opportunityFormSchema.omit({ clientId: tr
 
 export const opportunityFilterSchema = z
   .object({
+    query: z.string().max(180).optional(),
     statuses: z.array(z.enum(opportunityStatusValues)).optional(),
     priorities: z.array(z.enum(opportunityPriorityValues)).optional(),
     linkedMachineCategoryIds: z.array(z.string().uuid()).optional(),

@@ -5,7 +5,7 @@ import { useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import { StatePanel } from '@/components/ui/state-panel';
 import { TableShell } from '@/components/ui/table-shell';
-import { deleteOpportunity, updateOpportunityStatus } from '@/features/opportunities/actions';
+import { convertOpportunityToClient, deleteOpportunity, updateOpportunityStatus } from '@/features/opportunities/actions';
 import { OpportunityStatusBadge, opportunityStatusLabels } from '@/features/opportunities/components/opportunity-status-badge';
 import { opportunityStatusValues } from '@/features/opportunities/schemas';
 import type { Opportunity } from '@/types/opportunity';
@@ -48,7 +48,7 @@ export function OpportunityTable({
         <table className="min-w-[1200px] border-collapse text-sm md:min-w-full">
           <thead>
             <tr className="border-b bg-slate-50 text-left text-slate-600">
-              {showClient ? <th className="whitespace-nowrap px-3 py-2">Client</th> : null}
+              {showClient ? <th className="whitespace-nowrap px-3 py-2">Prospect</th> : null}
               <th className="whitespace-nowrap px-3 py-2">Titre</th>
               <th className="whitespace-nowrap px-3 py-2">Business</th>
               <th className="whitespace-nowrap px-3 py-2">Machines</th>
@@ -62,13 +62,23 @@ export function OpportunityTable({
               <tr key={opportunity.id} className="border-b border-slate-100 align-top">
                 {showClient ? (
                   <td className="px-3 py-2 font-medium text-slate-900">
-                    <Link href={`/clients/${opportunity.clientId}`} className="hover:underline">
-                      {opportunity.clientName}
-                    </Link>
+                    <p>{opportunity.prospectName}</p>
+                    {opportunity.prospectContactName ? <p className="text-xs font-normal text-slate-600">{opportunity.prospectContactName}</p> : null}
+                    {opportunity.prospectCity || opportunity.prospectPostalCode ? (
+                      <p className="text-xs font-normal text-slate-500">
+                        {[opportunity.prospectPostalCode, opportunity.prospectCity].filter(Boolean).join(' ')}
+                      </p>
+                    ) : null}
+                    {opportunity.clientId ? (
+                      <Link href={`/clients/${opportunity.clientId}`} className="text-xs font-normal text-primary hover:underline">
+                        Client: {opportunity.clientName ?? opportunity.prospectName}
+                      </Link>
+                    ) : null}
                   </td>
                 ) : null}
                 <td className="px-3 py-2 text-slate-800">
                   <p className="font-medium">{opportunity.title}</p>
+                  {!showClient ? <p className="mt-1 text-xs text-slate-600">Prospect: {opportunity.prospectName}</p> : null}
                   {opportunity.description ? <p className="mt-1 max-w-sm text-xs text-slate-600">{opportunity.description}</p> : null}
                   {opportunity.notes ? <p className="mt-1 max-w-sm text-xs text-slate-500">Notes: {opportunity.notes}</p> : null}
                 </td>
@@ -110,11 +120,7 @@ export function OpportunityTable({
                       setErrorMessage(null);
                       startTransition(async () => {
                         try {
-                          await updateOpportunityStatus(
-                            opportunity.clientId,
-                            opportunity.id,
-                            event.target.value as Opportunity['status']
-                          );
+                          await updateOpportunityStatus(opportunity.id, event.target.value as Opportunity['status']);
                         } catch {
                           setErrorMessage('La mise à jour du statut a échoué. Réessayez.');
                         }
@@ -134,6 +140,27 @@ export function OpportunityTable({
                     </Button>
                   ) : null}
 
+                  {!opportunity.clientId && opportunity.status === 'won' ? (
+                    <Button
+                      variant="success"
+                      size="sm"
+                      fullWidth
+                      disabled={isPending}
+                      onClick={() => {
+                        setErrorMessage(null);
+                        startTransition(async () => {
+                          try {
+                            await convertOpportunityToClient(opportunity.id);
+                          } catch {
+                            setErrorMessage('La création du client depuis la prospection a échoué.');
+                          }
+                        });
+                      }}
+                    >
+                      Créer le client
+                    </Button>
+                  ) : null}
+
                   <Button
                     variant="danger"
                     size="sm"
@@ -143,7 +170,7 @@ export function OpportunityTable({
                       setErrorMessage(null);
                       startTransition(async () => {
                         try {
-                          await deleteOpportunity(opportunity.clientId, opportunity.id);
+                          await deleteOpportunity(opportunity.id);
                         } catch {
                           setErrorMessage('La suppression de la prospection a échoué.');
                         }

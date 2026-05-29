@@ -38,17 +38,24 @@ function toMachineCountsByCategory(value: unknown): Record<string, number> {
 
 function mapOpportunityRow(row: Record<string, any>): Opportunity {
   const client = Array.isArray(row.clients) ? row.clients[0] : row.clients;
-  const flag = Array.isArray(client?.flag_definitions) ? client.flag_definitions[0] : client?.flag_definitions;
   const machineCategory = Array.isArray(row.machine_categories) ? row.machine_categories[0] : row.machine_categories;
 
   return {
     id: row.id,
-    clientId: row.client_id,
-    clientName: client?.name ?? 'Client',
+    clientId: row.client_id ?? null,
+    clientName: client?.name ?? null,
+    prospectName: row.prospect_name ?? client?.name ?? row.title ?? 'Prospect',
+    prospectContactName: row.prospect_contact_name ?? null,
+    prospectEmail: row.prospect_email ?? null,
+    prospectPhone: row.prospect_phone ?? null,
+    prospectAddress: row.prospect_address ?? null,
+    prospectPostalCode: row.prospect_postal_code ?? null,
+    prospectCity: row.prospect_city ?? null,
+    prospectCountry: row.prospect_country ?? null,
     title: row.title,
     description: row.description ?? null,
     linkedMachineCategoryId: row.linked_machine_category_id ?? null,
-    linkedMachineCategoryLabel: machineCategory?.name ?? null,
+    linkedMachineCategoryLabel: machineCategory?.label ?? null,
     priority: row.priority,
     status: row.status,
     estimatedValue: row.estimated_value ?? null,
@@ -61,8 +68,8 @@ function mapOpportunityRow(row: Record<string, any>): Opportunity {
     incumbentCompetitorCategory: toCompetitorCategory(row.incumbent_competitor_category),
     competitorContractEndDate: row.competitor_contract_end_date ?? null,
     notes: row.notes ?? null,
-    clientPostalCode: client?.postal_code ?? null,
-    clientFlag: toClientFlagCode(flag?.code),
+    clientPostalCode: row.prospect_postal_code ?? client?.postal_code ?? null,
+    clientFlag: toClientFlagCode(client?.flag),
     createdAt: row.created_at,
     updatedAt: row.updated_at
   };
@@ -70,6 +77,28 @@ function mapOpportunityRow(row: Record<string, any>): Opportunity {
 
 function filterOpportunities(opportunities: Opportunity[], filters: OpportunityFilterInput): Opportunity[] {
   return opportunities.filter((opportunity) => {
+    const query = filters.query?.trim().toLowerCase();
+
+    if (query) {
+      const haystack = [
+        opportunity.prospectName,
+        opportunity.clientName,
+        opportunity.prospectContactName,
+        opportunity.prospectEmail,
+        opportunity.prospectPhone,
+        opportunity.title,
+        opportunity.description,
+        opportunity.prospectCity
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+
+      if (!haystack.includes(query)) {
+        return false;
+      }
+    }
+
     if (filters.statuses?.length && !filters.statuses.includes(opportunity.status)) {
       return false;
     }
@@ -123,7 +152,7 @@ export const getOpportunities = cache(async (filters: OpportunityFilterInput = {
 
   const { data, error } = await supabase
     .from('client_opportunities')
-    .select('*, clients(name, postal_code, flag_definitions(code)), machine_categories(name)')
+    .select('*, clients(name, postal_code, flag), machine_categories(label)')
     .order('updated_at', { ascending: false });
 
   const source = error || !Array.isArray(data) ? [] : data.map((row) => mapOpportunityRow(row as Record<string, any>));

@@ -22,8 +22,6 @@ function toClientFlagCode(value: string | null | undefined): Contract['clientFla
 
 function mapContractRow(row: any): Contract {
   const client = Array.isArray(row.clients) ? row.clients[0] : row.clients;
-  const category = Array.isArray(client?.client_categories) ? client.client_categories[0] : client?.client_categories;
-  const flag = Array.isArray(client?.flag_definitions) ? client.flag_definitions[0] : client?.flag_definitions;
   return {
     id: row.id,
     clientId: row.client_id,
@@ -40,8 +38,8 @@ function mapContractRow(row: any): Contract {
     updatedAt: row.updated_at,
     clientPostalCode: client?.postal_code ?? null,
     clientCity: client?.city ?? null,
-    clientCategory: toClientCategoryCode(category?.name),
-    clientFlag: toClientFlagCode(flag?.code)
+    clientCategory: toClientCategoryCode(client?.category),
+    clientFlag: toClientFlagCode(client?.flag)
   };
 }
 
@@ -52,7 +50,7 @@ export const getContracts = cache(async (filters: ContractFilterInput = {}): Pro
 
   const { data, error } = await supabase
     .from('contracts')
-    .select('*, clients(name, postal_code, city, client_categories(name), flag_definitions(code))')
+    .select('*, clients(name, postal_code, city, category, flag)')
     .order('end_date', { ascending: true });
 
   const source = error || !Array.isArray(data) ? [] : data.map(mapContractRow);

@@ -1,5 +1,5 @@
 import { cache } from 'react';
-import type { User } from '@supabase/supabase-js';
+import type { User } from '@supabase/auth-js';
 import { createSupabaseServerComponentClient } from '@/lib/supabase/server';
 import type { UserProfile } from '@/types/auth';
 

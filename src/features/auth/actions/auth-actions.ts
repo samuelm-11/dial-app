@@ -3,6 +3,8 @@
 import { createSupabaseServerActionClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
 
+type CookieDebug = { name: string; value: string };
+
 export async function loginAction(email: string, password: string): Promise<{ error: string | null }> {
   const supabase = await createSupabaseServerActionClient();
 
@@ -15,17 +17,17 @@ export async function loginAction(email: string, password: string): Promise<{ er
   console.log('access_token prefix:', data?.session?.access_token?.slice(0, 20) ?? 'null');
 
   const cookieStore = await cookies();
-  const allCookies = cookieStore.getAll();
+  const allCookies = cookieStore.getAll() as CookieDebug[];
 
-  console.log('cookies après signIn:', allCookies.map((c) => c.name));
+  console.log('cookies après signIn:', allCookies.map((cookie) => cookie.name));
 
   console.log(
     'supabase cookies:',
     allCookies
-      .filter((c) => c.name.includes('sb-'))
-      .map((c) => ({
-        name: c.name,
-        valueStart: c.value.slice(0, 20),
+      .filter((cookie) => cookie.name.includes('sb-'))
+      .map((cookie) => ({
+        name: cookie.name,
+        valueStart: cookie.value.slice(0, 20),
       }))
   );
 

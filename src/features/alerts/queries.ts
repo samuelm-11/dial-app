@@ -55,14 +55,14 @@ function mapAlertRow(row: any): Alert {
     id: row.id,
     type,
     status: status as AlertStatus,
-    title: row.title,
+    title: row.title ?? (type === 'contract_end' ? 'Échéance contrat' : 'Changement filtre'),
     description: row.message ?? '',
     clientId: row.client_id,
     clientName: row.client_name ?? client?.name ?? 'Client',
     clientPostalCode: row.client_postal_code ?? client?.postal_code ?? null,
     machineId: row.client_machine_id ?? null,
-    machineTypeLabel: machineType?.name ?? null,
-    machineTypeCode: null,
+    machineTypeLabel: machineType?.label ?? null,
+    machineTypeCode: machineType?.code ?? null,
     contractId: row.contract_id ?? null,
     contractTitle: row.contract_title ?? null,
     dueDate,
@@ -80,7 +80,7 @@ export const getAlerts = cache(async (filters: AlertFilterInput = {}): Promise<A
 
   const { data, error } = await supabase
     .from('notifications')
-    .select('*, clients(name, postal_code), client_machines(machine_types(name))')
+    .select('*, clients(name, postal_code), client_machines(machine_types(label, code))')
     .order('due_date', { ascending: true });
 
   const source = error || !Array.isArray(data) ? [] : data.map(mapAlertRow);

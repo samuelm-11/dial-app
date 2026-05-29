@@ -7,10 +7,12 @@ import type { Opportunity } from '@/types/opportunity';
 
 export function ClientOpportunitiesTab({
   clientId,
+  clientName,
   opportunities,
   machineCategoryOptions
 }: {
   clientId: string;
+  clientName: string;
   opportunities: Opportunity[];
   machineCategoryOptions: Array<{ id: string; label: string }>;
 }) {
@@ -32,7 +34,7 @@ export function ClientOpportunitiesTab({
       </div>
 
       {showCreateForm ? (
-        <OpportunityForm clientId={clientId} machineCategoryOptions={machineCategoryOptions} onDone={() => setShowCreateForm(false)} />
+        <OpportunityForm clientId={clientId} clientName={clientName} machineCategoryOptions={machineCategoryOptions} onDone={() => setShowCreateForm(false)} />
       ) : null}
 
       {selectedOpportunity ? (
@@ -45,6 +47,7 @@ export function ClientOpportunitiesTab({
           </div>
           <OpportunityForm
             clientId={clientId}
+            clientName={clientName}
             opportunity={selectedOpportunity}
             machineCategoryOptions={machineCategoryOptions}
             onDone={() => setSelectedOpportunityId(null)}

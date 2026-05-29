@@ -46,7 +46,7 @@ export const getMachineCategories = cache(async (): Promise<MachineCategory[]> =
     return fallbackCategories;
   }
 
-  return data.map((item) => ({
+  return (data as Array<Record<string, any>>).map((item) => ({
     id: item.id,
     code: item.code,
     label: item.label,
@@ -64,7 +64,7 @@ export const getMachineTypes = cache(async (): Promise<MachineType[]> => {
     return fallbackTypes;
   }
 
-  return data.map((item) => ({
+  return (data as Array<Record<string, any>>).map((item) => ({
     id: item.id,
     machineCategoryId: item.machine_category_id,
     code: item.code,
@@ -91,7 +91,7 @@ export const getClientMachines = cache(async (clientId: string): Promise<ClientM
     return fallbackClientMachines;
   }
 
-  return data.map((item) => {
+  return (data as Array<Record<string, any>>).map((item) => {
     const machineType = Array.isArray(item.machine_types) ? item.machine_types[0] : item.machine_types;
     const machineCategory = machineType && Array.isArray(machineType.machine_categories)
       ? machineType.machine_categories[0]
@@ -134,7 +134,7 @@ export async function getClientIdsMatchingMachineFilters(filters: MachineFilterI
   if (filters.withFiltersDueSoon) {
     const { data: dueRows, error: dueError } = await supabase.from('v_filters_due').select('client_id');
     if (!dueError && dueRows) {
-      dueSoonClientIds = new Set(dueRows.map((row) => row.client_id as string));
+      dueSoonClientIds = new Set((dueRows as Array<Record<string, unknown>>).map((row) => row.client_id as string));
       if (!dueSoonClientIds.size) {
         return new Set<string>();
       }
@@ -149,7 +149,7 @@ export async function getClientIdsMatchingMachineFilters(filters: MachineFilterI
     return new Set<string>();
   }
 
-  const allRows = data.map((item) => {
+  const allRows = (data as Array<Record<string, any>>).map((item) => {
     const machineType = Array.isArray(item.machine_types) ? item.machine_types[0] : item.machine_types;
 
     return {
