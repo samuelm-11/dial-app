@@ -9,7 +9,6 @@ export type ClientCategory = {
 export type Client = {
   id: string;
   name: string;
-  parentClientId: string | null;
   categoryId: string | null;
   isActive: boolean;
   createdAt: string;

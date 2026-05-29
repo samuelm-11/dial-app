@@ -5,7 +5,6 @@ export const clientFlagValues = ['vip', 'risk', 'watch', 'none'] as const;
 
 export const clientFormSchema = z.object({
   name: z.string().min(2, 'Le nom doit contenir au moins 2 caractères.'),
-  parentClientId: z.preprocess((value) => (value === '' ? null : value), z.string().uuid().nullable().optional()),
   category: z.enum(clientCategoryValues),
   flag: z.enum(clientFlagValues),
   address: z.string().min(4, 'Adresse requise.'),
@@ -35,9 +34,6 @@ export const clientFilterSchema = z.object({
   city: z.string().optional(),
   categories: z.array(z.enum(clientCategoryValues)).optional(),
   flags: z.array(z.enum(clientFlagValues)).optional(),
-  onlyParents: z.boolean().optional(),
-  onlySubClients: z.boolean().optional(),
-  hasParent: z.boolean().optional(),
   hasContract: z.boolean().optional(),
   hasOpenOpportunities: z.boolean().optional(),
   hasOpenAlerts: z.boolean().optional(),

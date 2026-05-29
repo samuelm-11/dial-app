@@ -11,7 +11,6 @@ export async function createClient(input: CreateClientInput) {
 
   const { error } = await supabase.from('clients').insert({
     name: payload.name,
-    parent_client_id: payload.parentClientId ?? null,
     category: payload.category,
     flag: payload.flag,
     address: payload.address,
@@ -38,7 +37,6 @@ export async function updateClient(clientId: string, input: UpdateClientInput) {
     .from('clients')
     .update({
       name: payload.name,
-      parent_client_id: payload.parentClientId,
       category: payload.category,
       flag: payload.flag,
       address: payload.address,
@@ -57,11 +55,4 @@ export async function updateClient(clientId: string, input: UpdateClientInput) {
 
   revalidatePath('/clients');
   revalidatePath(`/clients/${clientId}`);
-}
-
-export async function createSubClient(parentClientId: string, input: CreateClientInput) {
-  return createClient({
-    ...input,
-    parentClientId
-  });
 }

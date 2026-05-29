@@ -84,34 +84,6 @@ export function ClientFilters({
         <label className="flex items-center gap-2 text-sm text-slate-700">
           <input
             type="checkbox"
-            defaultChecked={searchParams.get('onlyParents') === '1'}
-            onChange={(event) => setBoolean('onlyParents', event.target.checked)}
-          />
-          Clients principaux uniquement
-        </label>
-
-        <label className="flex items-center gap-2 text-sm text-slate-700">
-          <input
-            type="checkbox"
-            defaultChecked={searchParams.get('onlySubClients') === '1'}
-            onChange={(event) => setBoolean('onlySubClients', event.target.checked)}
-          />
-          Sites / filiales uniquement
-        </label>
-      </div>
-
-      <div className="grid gap-3 md:grid-cols-4">
-        <label className="flex items-center gap-2 text-sm text-slate-700">
-          <input
-            type="checkbox"
-            defaultChecked={searchParams.get('hasParent') === '1'}
-            onChange={(event) => setBoolean('hasParent', event.target.checked)}
-          />
-          Avec société mère
-        </label>
-        <label className="flex items-center gap-2 text-sm text-slate-700">
-          <input
-            type="checkbox"
             defaultChecked={searchParams.get('hasContract') === '1'}
             onChange={(event) => setBoolean('hasContract', event.target.checked)}
           />

@@ -33,15 +33,12 @@ async function importClient(row: MappedImportRow, result: ImportExecutionResult,
     return;
   }
 
-  const parentClientId = row.values.parentClientName ? await findClientIdByName(row.values.parentClientName, supabase) : null;
-
   const { error } = await supabase.from('clients').insert({
     name,
     city,
     postal_code: normalizeText(row.values.postalCode) || null,
     country: normalizeText(row.values.country) || 'Belgique',
     address: normalizeText(row.values.address) || '-',
-    parent_client_id: parentClientId,
     category: normalizeText(row.values.category).toLowerCase() || 'other',
     flag: normalizeText(row.values.flag).toLowerCase() || 'none'
   });

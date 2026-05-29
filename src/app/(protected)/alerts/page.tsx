@@ -3,7 +3,7 @@ import { AlertFilters } from '@/features/alerts/components/alert-filters';
 import { AlertTable } from '@/features/alerts/components/alert-table';
 import { getAlerts } from '@/features/alerts/queries';
 import { getAlertFiltersFromSearchParams } from '@/features/alerts/search-params';
-import { getClientParentOptions } from '@/features/clients/queries';
+import { getClientOptions } from '@/features/clients/queries';
 
 export default async function AlertsPage({
   searchParams
@@ -13,7 +13,7 @@ export default async function AlertsPage({
   const resolvedSearchParams = await searchParams;
   const filters = getAlertFiltersFromSearchParams(resolvedSearchParams);
 
-  const [alerts, clients] = await Promise.all([getAlerts(filters), getClientParentOptions()]);
+  const [alerts, clients] = await Promise.all([getAlerts(filters), getClientOptions()]);
   const safeAlerts = Array.isArray(alerts) ? alerts : [];
   const safeClients = Array.isArray(clients) ? clients : [];
 

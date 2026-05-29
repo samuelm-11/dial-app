@@ -1,7 +1,6 @@
 create table if not exists public.clients (
   id uuid primary key default gen_random_uuid(),
   name text not null,
-  parent_client_id uuid references public.clients(id),
   client_category_id uuid references public.client_categories(id),
   is_active boolean not null default true,
   created_at timestamptz not null default now(),

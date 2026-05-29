@@ -20,14 +20,3 @@ select
 from public.client_machines cm
 join public.clients cl on cl.id = cm.client_id
 where cm.next_filter_change_date is not null;
-
-create or replace view public.v_clients_with_parent as
-select
-  c.id,
-  c.name,
-  c.parent_client_id,
-  p.name as parent_name,
-  c.client_category_id,
-  c.is_active
-from public.clients c
-left join public.clients p on p.id = c.parent_client_id;

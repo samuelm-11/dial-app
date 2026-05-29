@@ -7,18 +7,15 @@ import { useForm } from 'react-hook-form';
 import { createClient, updateClient } from '@/features/clients/actions';
 import { clientCategoryLabels, clientFlagLabels } from '@/features/clients/helpers';
 import { clientFormSchema, type ClientFormValues } from '@/features/clients/schemas';
-import { ClientParentSelector } from '@/features/clients/components/client-parent-selector';
 
 export function ClientForm({
   mode,
   clientId,
-  defaultValues,
-  parentOptions
+  defaultValues
 }: {
   mode: 'create' | 'edit';
   clientId?: string;
   defaultValues?: Partial<ClientFormValues>;
-  parentOptions: Array<{ id: string; name: string }>;
 }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -59,8 +56,6 @@ export function ClientForm({
         <Field label="Nom" error={errors.name?.message}>
           <input className="w-full rounded border border-slate-300 px-3 py-2 text-sm" {...register('name')} />
         </Field>
-
-        <ClientParentSelector options={parentOptions} register={register} error={errors.parentClientId} />
 
         <Field label="Catégorie" error={errors.category?.message}>
           <select className="w-full rounded border border-slate-300 px-3 py-2 text-sm" {...register('category')}>

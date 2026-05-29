@@ -1,10 +1,10 @@
 import { PageContainer } from '@/components/layout/page-container';
-import { getClientParentOptions } from '@/features/clients/queries';
+import { getClientOptions } from '@/features/clients/queries';
 import { getMachineCategories } from '@/features/machines/queries';
 import { OpportunityForm } from '@/features/opportunities/components/opportunity-form';
 
 export default async function NewOpportunityPage() {
-  const [clients, machineCategories] = await Promise.all([getClientParentOptions(), getMachineCategories()]);
+  const [clients, machineCategories] = await Promise.all([getClientOptions(), getMachineCategories()]);
   const safeClients = Array.isArray(clients) ? clients : [];
   const safeMachineCategories = Array.isArray(machineCategories) ? machineCategories : [];
 

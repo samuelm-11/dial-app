@@ -3,8 +3,7 @@ import { PageContainer } from '@/components/layout/page-container';
 import { Button } from '@/components/ui/button';
 import { ClientFilters } from '@/features/clients/components/client-filters';
 import { ClientTable } from '@/features/clients/components/client-table';
-import { ClientTreeView } from '@/features/clients/components/client-tree-view';
-import { getClientHierarchy, getClients } from '@/features/clients/queries';
+import { getClients } from '@/features/clients/queries';
 import { getFiltersFromSearchParams } from '@/features/clients/search-params';
 import { getMachineCategories, getMachineTypes } from '@/features/machines/queries';
 
@@ -15,16 +14,13 @@ export default async function ClientsPage({
 }) {
   const resolvedSearchParams = await searchParams;
   const filters = getFiltersFromSearchParams(resolvedSearchParams);
-  const view = Array.isArray(resolvedSearchParams.view) ? resolvedSearchParams.view[0] : resolvedSearchParams.view;
 
-  const [clients, hierarchy, machineCategories, machineTypes] = await Promise.all([
+  const [clients, machineCategories, machineTypes] = await Promise.all([
     getClients(filters),
-    getClientHierarchy(filters),
     getMachineCategories(),
     getMachineTypes()
   ]);
   const safeClients = Array.isArray(clients) ? clients : [];
-  const safeHierarchy = Array.isArray(hierarchy) ? hierarchy : [];
   const safeMachineCategories = Array.isArray(machineCategories) ? machineCategories : [];
   const safeMachineTypes = Array.isArray(machineTypes) ? machineTypes : [];
 
@@ -41,28 +37,10 @@ export default async function ClientsPage({
               {/* TODO(step-imports): remplacer par export CSV/Excel piloté par les filtres actifs. */}
             </Button>
           </div>
-          <div className="grid grid-cols-2 gap-2 text-sm sm:flex">
-            <Link
-              href="/clients?view=table"
-              className={`rounded-xl px-4 py-2 text-center font-medium ${
-                view !== 'tree' ? 'bg-primary text-white' : 'border border-muted bg-white text-primary'
-              }`}
-            >
-              Vue tableau
-            </Link>
-            <Link
-              href="/clients?view=tree"
-              className={`rounded-xl px-4 py-2 text-center font-medium ${
-                view === 'tree' ? 'bg-primary text-white' : 'border border-muted bg-white text-primary'
-              }`}
-            >
-              Vue arborescente
-            </Link>
-          </div>
         </div>
 
         <ClientFilters machineCategories={safeMachineCategories} machineTypes={safeMachineTypes} />
-        {view === 'tree' ? <ClientTreeView nodes={safeHierarchy} /> : <ClientTable clients={safeClients} />}
+        <ClientTable clients={safeClients} />
       </div>
     </PageContainer>
   );
